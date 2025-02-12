@@ -28,14 +28,22 @@
                 <label for="fname">First Name:</label>
                 <input type="text" id="fname" name="fname" required />
 
-                <label for="mname">Middle Name:</label>
-                <input type="text" id="mname" name="mname" required />
+                <label for="mname">(OPTIONAL)Middle Name:</label>
+                <input type="text" id="mname" name="mname" />
 
                 <label for="course">Course:</label>
                 <select id="course" name="course" required>
                     <option value="BSIT">BSIT</option>
                     <option value="BSCS">BSCS</option>
                     <option value="ACT">ACT</option>
+                    <option value="BSCE">BSCE</option>
+                    <option value="BSCpE">BSCpE</option>
+                    <option value="BSEd">BSEd</option>
+                    <option value="BSAcc">BSAcc</option>
+                    <option value="BSComm">BSComm</option>
+                    <option value="BSPolSci">BSPolSci</option>
+                    <option value="BSEE">BSEE</option>
+                    <option value="NAME">NAME</option>
                 </select>
 
                 <label for="year">Year Level:</label>
@@ -72,11 +80,21 @@
         $idno = $_POST['idno'];
         $lastname = $_POST['lname'];
         $firstname = $_POST['fname'];
-        $middlename = $_POST['mname'];
+        if ($_POST['mname'] == "") {
+            $middlename = NULL;
+        } else {
+            $middlename = $_POST['mname'];
+        };
         $course = $_POST['course'];
         $year = $_POST['year'];
         $email = $_POST['email'];
         $password = $_POST['password'];
+        $session;
+        if ($course == "BSIT" || $course == "BSCS" || $course == "ACT") {
+            $session = 30;
+        } else {
+            $session = 15;
+        }
 
         // check if IDNO exists
         $check_query = "SELECT * FROM students WHERE IDNO = ?";
@@ -86,14 +104,13 @@
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            $msg = "IDNO already exists!";
-            echo "<script type='text/javascript'>alert('$msg');</script>";
+            echo "<script type='text/javascript'>alert('IDNO already exists!');</script>";
         } else {
             // insert new record
-            $sql = "INSERT INTO students (IDNO, LASTNAME, FIRSTNAME, MIDDLENAME, COURSE, YEAR, EMAIL, PASSWORD)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO students (IDNO, LASTNAME, FIRSTNAME, MIDDLENAME, COURSE, YEAR, EMAIL, PASSWORD, SESSION)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("issssiss", $idno, $lastname, $firstname, $middlename, $course, $year, $email, $password);
+            $stmt->bind_param("issssisss", $idno, $lastname, $firstname, $middlename, $course, $year, $email, $password, $session);
 
             if ($stmt->execute()) {
                 $msg = "Registered successfully!";

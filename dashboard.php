@@ -50,12 +50,11 @@
         <div class="user-info-box">
             <h2 class="w3-blue w3-center">User Information</h2>
             <p><b>ID NO</b>: <?php echo htmlspecialchars($user['IDNO']); ?></p>
-            <p><b>First Name</b>: <?php echo htmlspecialchars($user['FIRSTNAME']); ?></p>
-            <p><b>Last Name</b>: <?php echo htmlspecialchars($user['LASTNAME']); ?></p>
-            <p><b>Middle Name</b>: <?php echo htmlspecialchars($user['MIDDLENAME']); ?></p>
+            <p><b>Name</b>: <?php echo htmlspecialchars($user['FIRSTNAME'] . ' ' . $user['MIDDLENAME'] . ' ' . $user['LASTNAME']); ?></p>
             <p><b>Course</b>: <?php echo htmlspecialchars($user['COURSE']); ?></p>
             <p><b>Year Level</b>: <?php echo htmlspecialchars($user['YEAR']); ?></p>
             <p><b>Email</b>: <?php echo htmlspecialchars($user['EMAIL']); ?></p>
+            <p><b>Session</b>: <?php echo htmlspecialchars($user['SESSION']); ?></p>
         </div>
     </div>
 
@@ -70,7 +69,7 @@
         <div class="lab-rules-box">
             <h4 class="w3-center"><b>LABORARTORY RULES AND REGULATIONS</b></h4>
             <!-- Add more content here -->
-</div>
+        </div>
     </div>
 </body>
 </html>
@@ -78,6 +77,7 @@
 <?php
     if (isset($_POST['logout'])) {
         session_destroy();
+        echo "<script type='text/javascript'>alert('logged out');</script>";
         header("Location: index.php");
         exit();
     }

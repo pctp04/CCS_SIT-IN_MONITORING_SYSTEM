@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 05, 2025 at 04:31 AM
+-- Generation Time: Feb 12, 2025 at 05:32 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -32,22 +32,29 @@ CREATE TABLE `students` (
   `IDNO` int(20) NOT NULL,
   `LASTNAME` varchar(255) NOT NULL,
   `FIRSTNAME` varchar(255) NOT NULL,
-  `MIDDLENAME` varchar(255) NOT NULL,
+  `MIDDLENAME` varchar(255) DEFAULT NULL,
   `COURSE` varchar(255) NOT NULL,
   `YEAR` int(11) NOT NULL,
   `EMAIL` varchar(255) NOT NULL,
-  `PASSWORD` char(255) NOT NULL
+  `PASSWORD` char(255) NOT NULL,
+  `SESSION` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `students`
 --
 
-INSERT INTO `students` (`ID`, `IDNO`, `LASTNAME`, `FIRSTNAME`, `MIDDLENAME`, `COURSE`, `YEAR`, `EMAIL`, `PASSWORD`) VALUES
-(1, 1, 'ss', 'aa', 'tt', 'asdf', 1, 'dfas@email.com', '1'),
-(3, 2, '2', '2', '2', '2', 2, '2@email.com', '2'),
-(4, 4, '4', '4', '4', '4', 1, '4@email.com', '4'),
-(5, 5, '5', '5', '5', '5', 4, '5@email.com', '5');
+INSERT INTO `students` (`ID`, `IDNO`, `LASTNAME`, `FIRSTNAME`, `MIDDLENAME`, `COURSE`, `YEAR`, `EMAIL`, `PASSWORD`, `SESSION`) VALUES
+(1, 1, 'ss', 'aa', 'tt', 'asdf', 1, 'dfas@email.com', '1', 0),
+(3, 2, '2', '2', '2', '2', 2, '2@email.com', '2', 0),
+(4, 4, '4', '4', '4', '4', 1, '4@email.com', '4', 0),
+(5, 5, '5', '5', '5', '5', 4, '5@email.com', '5', 0),
+(6, 6, '6', '6', '6', 'BSIT', 4, '6@email.com', '6', 0),
+(8, 7, '7', '7', '7', 'BSIT', 1, '7@email.ccom', '7', 0),
+(9, 10, '6', '4', '6', 'BSIT', 1, 'dfas@email.com', '123', 0),
+(10, 2222, 'pats', 'pc', 't', 'BSIT', 1, 'dfas@email.com', '2222', 0),
+(11, 12345, 'patino', 'paul', 'te', 'ACT', 4, 'patinopc@gmail.com', 'sample', 0),
+(12, 12, '12', '12', '12', 'BSIT', 1, '12@email.com', '12', 30);
 
 --
 -- Indexes for dumped tables
@@ -68,7 +75,7 @@ ALTER TABLE `students`
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
