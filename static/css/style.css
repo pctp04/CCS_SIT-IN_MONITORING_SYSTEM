@@ -39,26 +39,34 @@
     justify-content: center;
 }
 
-.header-container .logo {
-    max-height: 50px;
-    margin-right: 10px;
-}
-
-.dashboard-container {
+.rules-container {
     display: flex;
     align-items: flex-start;
     padding: 20px;
+    flex: 0 1 auto;
 }
 
-.user-info-box {
-    border: 1px solid #ccc;
+.announcement-container {
     padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    margin-right: 20px;
+    flex: 0 1 auto;
 }
 
-.main-content {
-    flex-grow: 1;
+.header-logo {
+    width: 50px;
+    height: 50px;
+    opacity: 0.9;
+}
+
+.lab-rules-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    height: 300px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 15% 40% 40%; /* Adjust column widths as needed */
+    gap: 30px; /* Adjust gap between columns */
 }
