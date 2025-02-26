@@ -67,6 +67,6 @@
 
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 15% 40% 40%; /* Adjust column widths as needed */
+    grid-template-columns: 15% 40% 40% 40% 20% 20%; /* Adjust column widths as needed */
     gap: 30px; /* Adjust gap between columns */
 }

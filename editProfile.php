@@ -86,17 +86,17 @@
 
                 <label for="course">Course:</label>
                 <select id="course" name="course" value="<?php echo htmlspecialchars($user['COURSE'])?>" required>
-                    <option value="BSIT">BSIT</option>
-                    <option value="BSCS">BSCS</option>
-                    <option value="ACT">ACT</option>
-                    <option value="BSCE">BSCE</option>
-                    <option value="BSCpE">BSCpE</option>
-                    <option value="BSEd">BSEd</option>
-                    <option value="BSAcc">BSAcc</option>
-                    <option value="BSComm">BSComm</option>
-                    <option value="BSPolSci">BSPolSci</option>
-                    <option value="BSEE">BSEE</option>
-                    <option value="NAME">NAME</option>
+                    <option value="BSIT" <?php if ($user['COURSE'] == 'BSIT') echo 'selected'; ?>>BSIT</option>
+                    <option value="BSCS" <?php if ($user['COURSE'] == 'BSCS') echo 'selected'; ?>>BSCS</option>
+                    <option value="ACT" <?php if ($user['COURSE'] == 'ACT') echo 'selected'; ?>>ACT</option>
+                    <option value="BSCE" <?php if ($user['COURSE'] == 'BSCE') echo 'selected'; ?>>BSCE</option>
+                    <option value="BSCpE" <?php if ($user['COURSE'] == 'BSCpE') echo 'selected'; ?>>BSCpE</option>
+                    <option value="BSEd" <?php if ($user['COURSE'] == 'BSed') echo 'selected'; ?>>BSEd</option>
+                    <option value="BSAcc" <?php if ($user['COURSE'] == 'BSAcc') echo 'selected'; ?>>BSAcc</option>
+                    <option value="BSComm" <?php if ($user['COURSE'] == 'BSComm') echo 'selected'; ?>>BSComm</option>
+                    <option value="BSPolSci" <?php if ($user['COURSE'] == 'BSPolSci') echo 'selected'; ?>>BSPolSci</option>
+                    <option value="BSEE" <?php if ($user['COURSE'] == 'BSEE') echo 'selected'; ?>>BSEE</option>
+                    <option value="NAME" <?php if ($user['COURSE'] == 'NAME') echo 'selected'; ?>>NAME</option>
                 </select>
 
                 <label for="year">Year Level:</label>

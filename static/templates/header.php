@@ -13,7 +13,7 @@ mysqli_close($conn);
                 <img src="static/images/ccsLogo.png" alt="CSSLogo" class="header-logo">
                 CCS Sit-in monitoring system
             </h3>
-            <form action="logout.php" method="post" style="margin-left: auto">
+            <form action="static/templates/logout.php" method="post" style="margin-left: auto">
                 <input type="submit" name="logout" value="Logout" class="w3-button w3-red w3-round">
             </form>
         </div>

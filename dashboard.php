@@ -54,6 +54,7 @@
                 <h3>User Information</h3>
             </header>
             <div class="w3-container">
+                <img src="static/images/defaultPfp.png" alt="User" class="w3-round w3-circle w3-center" style="width: 100px; height: 100px;"> <br> <hr>
                 <p><b>ID NO</b>: <?php echo htmlspecialchars($user['IDNO']); ?></p>
                 <p><b>Name</b>: <?php echo htmlspecialchars($user['FIRSTNAME'] . ' ' . $user['MIDDLENAME'] . ' ' . $user['LASTNAME']); ?></p>
                 <p><b>Course</b>: <?php echo htmlspecialchars($user['COURSE']); ?></p>
