@@ -97,7 +97,7 @@
         }
 
         // check if IDNO exists
-        $check_query = "SELECT * FROM students WHERE IDNO = ?";
+        $check_query = "SELECT * FROM user WHERE IDNO = ?";
         $stmt = $conn->prepare($check_query);
         $stmt->bind_param("i", $idno);
         $stmt->execute();
@@ -107,7 +107,7 @@
             echo "<script type='text/javascript'>alert('IDNO already exists!');</script>";
         } else {
             // insert new record
-            $sql = "INSERT INTO students (IDNO, LASTNAME, FIRSTNAME, MIDDLENAME, COURSE, YEAR, EMAIL, PASSWORD, SESSION)
+            $sql = "INSERT INTO user (IDNO, LASTNAME, FIRSTNAME, MIDDLENAME, COURSE, YEAR, EMAIL, PASSWORD, SESSION)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("issssisss", $idno, $lastname, $firstname, $middlename, $course, $year, $email, $password, $session);

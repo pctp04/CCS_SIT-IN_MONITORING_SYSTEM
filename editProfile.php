@@ -9,7 +9,7 @@
 
     $user_id = $_SESSION['user_id'];
 
-    $stmt = $conn->prepare("SELECT * FROM students WHERE IDNO = ?");
+    $stmt = $conn->prepare("SELECT * FROM user WHERE IDNO = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -38,7 +38,7 @@
         $password = $_POST['password'];
         $session = $_POST['session'];
 
-        $sql = "UPDATE students SET LASTNAME = ?, FIRSTNAME = ?, MIDDLENAME = ?, COURSE = ?, YEAR = ?, EMAIL = ?, PASSWORD = ? WHERE IDNO = ?";
+        $sql = "UPDATE user SET LASTNAME = ?, FIRSTNAME = ?, MIDDLENAME = ?, COURSE = ?, YEAR = ?, EMAIL = ?, PASSWORD = ? WHERE IDNO = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssssissi", $lastname, $firstname, $middlename, $course, $year, $email, $password, $idno);
         

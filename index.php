@@ -48,7 +48,7 @@
         $password = $_POST['password'];
 
         if ($idno && $password){
-            $sql = "SELECT * FROM students WHERE idno='$idno' AND password='$password'";
+            $sql = "SELECT * FROM user WHERE idno='$idno' AND password='$password'";
             $result = mysqli_query($conn, $sql);
 
             if ($result) {
