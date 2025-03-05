@@ -23,7 +23,7 @@
 
     // Handle form submissions before any output
     if(isset($_POST["cancel"])) {
-        header("Location: dashboard.php");
+        header("Location: studentDashboard.php");
         exit();
     }
 
@@ -44,7 +44,7 @@
         
         if ($stmt->execute()) {
             $_SESSION['update_success'] = true;
-            header("Location: dashboard.php");
+            header("Location: studentDashboard.php");
             exit();
         } else {
             $error_message = "Error: " . $stmt->error;

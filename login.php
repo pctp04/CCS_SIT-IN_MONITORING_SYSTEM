@@ -60,11 +60,11 @@
 
                     if ($user['ROLE'] == 'admin') {
                         echo "<script type='text/javascript'>alert('login successful');</script>";
-                        header("Location: admin/dashboard.php");
+                        header("Location: src/admin/adminDashboard.php");
                         exit();
                     } else {
                         echo "<script type='text/javascript'>alert('login successful');</script>";
-                        header("Location: src/students/dashboard.php");
+                        header("Location: src/students/studentDashboard.php");
                         exit();
                     }
                 } else {

@@ -63,7 +63,7 @@
                 <p><b>Session</b>: <?php echo htmlspecialchars($user['SESSION']); ?></p>
             </div>
             <footer>
-                <form action="dashboard.php" method="post">
+                <form action="studentDashboard.php" method="post">
                     <input type="submit" name="editProfile" value="Edit Profile" class="w3-button w3-green w3-round">
             </footer>
         </div>
