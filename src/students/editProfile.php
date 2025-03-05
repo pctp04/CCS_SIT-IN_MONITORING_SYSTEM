@@ -64,7 +64,7 @@
 </head>
 <body>
     <!-- header -->
-    <?php include(__DIR__ . '/../static/templates/header.php'); ?>
+    <?php include(__DIR__ . '\studentHeader.php'); ?>
 
     <!-- main content -->
     <div class="w3-center">

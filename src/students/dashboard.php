@@ -45,7 +45,7 @@
 </head>
 <body>
     <!-- header -->
-    <?php include('..\static\templates\header.php'); ?>
+    <?php include(__DIR__ . '\studentHeader.php'); ?>
 
     <div class="dashboard-grid">
         <!-- container for user information -->

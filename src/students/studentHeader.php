@@ -1,7 +1,6 @@
 <?php
-include("../../database.php");
-
-mysqli_close($conn);
+    include(__DIR__ . '/../../database.php');
+    mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
