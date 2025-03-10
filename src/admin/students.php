@@ -1,41 +1,34 @@
-<?php 
-    session_start();
-    include(__DIR__ . '/../../database.php');
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../../login.php");
+    exit();
+}
+include(__DIR__ . '/../../database.php');
 
-    if (!isset($_SESSION['user_id'])) {
-        header("Location: ../../login.php");
-        exit();
-    }
+$default_student_per_page = 5;
 
-    $default_student_per_page = 5;
-    
-    // Add current page handling
-    $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    if ($current_page < 1) $current_page = 1;
+// Add current page handling
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($current_page < 1) $current_page = 1;
 
-    if (isset($_GET['entries'])) {
-        $default_student_per_page = $_GET['entries'];
-    }
+if (isset($_GET['entries'])) {
+    $default_student_per_page = $_GET['entries'];
+}
 
-    $start_from = ($current_page - 1) * $default_student_per_page;
+$start_from = ($current_page - 1) * $default_student_per_page;
 
-    $query = "SELECT * FROM user WHERE ROLE = 'student' LIMIT $start_from, $default_student_per_page";
-    if (isset($_GET['search'])) {
-        $search = $_GET['search'];
-        $query = "SELECT * FROM user WHERE ROLE = 'student' AND (IDNO LIKE '%$search%' OR FIRSTNAME LIKE '%$search%' OR MIDDLENAME LIKE '%$search%' OR LASTNAME LIKE '%$search%' OR COURSE LIKE '%$search%' OR YEAR LIKE '%$search%') LIMIT $start_from, $default_student_per_page";
-    }
-    $result = $conn->query($query);
+$query = "SELECT * FROM user WHERE ROLE = 'student' LIMIT $start_from, $default_student_per_page";
+if (isset($_GET['search'])) {
+    $search = $_GET['search'];
+    $query = "SELECT * FROM user WHERE ROLE = 'student' AND (IDNO LIKE '%$search%' OR FIRSTNAME LIKE '%$search%' OR MIDDLENAME LIKE '%$search%' OR LASTNAME LIKE '%$search%' OR COURSE LIKE '%$search%' OR YEAR LIKE '%$search%') LIMIT $start_from, $default_student_per_page";
+}
+$result = $conn->query($query);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="../static/css/style.css">
-    <title>Students</title>
-</head>
+
 <body>
     <?php include(__DIR__ . '\adminHeader.php'); ?>
     <!--header-->
@@ -108,8 +101,3 @@
 </body>
 </html>
 
-<?php
-
-    
-
-?>
