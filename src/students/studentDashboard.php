@@ -19,6 +19,7 @@
 
     $user_id = $_SESSION['user_id'];
 
+    // Fetch user information
     $stmt = $conn->prepare("SELECT * FROM user WHERE IDNO = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
@@ -30,6 +31,22 @@
         echo "User not found.";
         exit();
     }
+    $stmt->close();
+
+    // Fetch announcements with admin information
+    $announcements = [];
+    $stmt = $conn->prepare("
+        SELECT a.*, u.FIRSTNAME, u.LASTNAME 
+        FROM announcement a 
+        JOIN user u ON a.ADMIN_ID = u.IDNO 
+        ORDER BY a.CREATED_AT DESC
+    ");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $announcements[] = $row;
+    }
+    $stmt->close();
 
     mysqli_close($conn);
 ?>
@@ -42,11 +59,51 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="../static/css/style.css">
     <title>Dashboard</title>
+    <style>
+        .announcement-box {
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2196F3;
+            background-color: #f9f9f9;
+        }
+        .announcement-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .announcement-content {
+            margin-bottom: 10px;
+            color: #666;
+        }
+        .announcement-meta {
+            font-size: 12px;
+            color: #888;
+        }
+        .announcement-container {
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .announcement-header {
+            background-color: #2196F3;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .no-announcements {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
     <!-- header -->
     <?php include(__DIR__ . '\studentHeader.php'); ?>
-
+    <div class="content-wrapper">
     <div class="dashboard-grid">
         <!-- container for user information -->
         <div class="w3-card-4 w3-margin-left">
@@ -65,15 +122,37 @@
             <footer>
                 <form action="studentDashboard.php" method="post">
                     <input type="submit" name="editProfile" value="Edit Profile" class="w3-button w3-green w3-round">
+                </form>
             </footer>
         </div>
 
-        <!-- container for  -->
-        <div class="announcement-container w3-card">
-            <header class="w3-center w3-container">
-                <h1> ANNOUNCEMENT </h1>
-            </header>
-                <!-- Add more content here -->
+        <!-- container for Announcement -->
+        <div class="w3-card">
+            <div class="announcement-header">
+                <h3>ANNOUNCEMENTS</h3>
+            </div>
+            <div class="announcement-container">
+                <?php if (empty($announcements)): ?>
+                    <div class="no-announcements">
+                        <p>No announcements available.</p>
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($announcements as $announcement): ?>
+                        <div class="announcement-box">
+                            <div class="announcement-title">
+                                <?php echo htmlspecialchars($announcement['TITLE']); ?>
+                            </div>
+                            <div class="announcement-content">
+                                <?php echo nl2br(htmlspecialchars($announcement['CONTENT'])); ?>
+                            </div>
+                            <div class="announcement-meta">
+                                Posted by: <?php echo htmlspecialchars($announcement['FIRSTNAME'] . ' ' . $announcement['LASTNAME']); ?> 
+                                on <?php echo date('F j, Y g:i A', strtotime($announcement['CREATED_AT'])); ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
         </div>
 
         <!-- lab rules -->
@@ -111,6 +190,7 @@
                 </ol>
             </div>
         </div>
+    </div>
     </div>
 </body>
 </html>

@@ -95,7 +95,7 @@
         } else {
             $session = 15;
         }
-        $role = "student";
+        $role = "Student";
 
         // check if IDNO exists
         $check_query = "SELECT * FROM user WHERE IDNO = ?";

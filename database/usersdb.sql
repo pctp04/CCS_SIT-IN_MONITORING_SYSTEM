@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 03, 2025 at 04:55 AM
+-- Generation Time: Mar 23, 2025 at 04:35 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,35 +24,59 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `students`
+-- Table structure for table `announcement`
 --
 
-CREATE TABLE `students` (
-  `LASTNAME` varchar(255) NOT NULL,
-  `FIRSTNAME` varchar(255) NOT NULL,
-  `MIDDLENAME` varchar(255) DEFAULT NULL,
-  `COURSE` varchar(255) NOT NULL,
-  `YEAR` int(11) NOT NULL,
-  `EMAIL` varchar(255) NOT NULL,
-  `PASSWORD` char(255) NOT NULL,
-  `SESSION` int(11) NOT NULL
+CREATE TABLE `announcement` (
+  `ID` int(11) NOT NULL,
+  `TITLE` varchar(255) NOT NULL,
+  `CONTENT` varchar(255) NOT NULL,
+  `CREATED_AT` datetime NOT NULL DEFAULT current_timestamp(),
+  `ADMIN_ID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `feedback`
+--
+
+CREATE TABLE `feedback` (
+  `FEEDBACK_ID` int(11) NOT NULL,
+  `STUDENT_ID` int(11) NOT NULL,
+  `LABORATORY` varchar(50) NOT NULL,
+  `SESSION_DATE` date NOT NULL,
+  `FEEDBACK_MSG` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sit-in`
+--
+
+CREATE TABLE `sit-in` (
+  `ID` int(11) NOT NULL,
+  `STUDENT_ID` int(11) NOT NULL,
+  `LABORATORY` varchar(50) NOT NULL,
+  `PURPOSE` varchar(50) NOT NULL,
+  `SESSION_DATE` date NOT NULL,
+  `STATUS` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `students`
+-- Dumping data for table `sit-in`
 --
 
-INSERT INTO `students` (`LASTNAME`, `FIRSTNAME`, `MIDDLENAME`, `COURSE`, `YEAR`, `EMAIL`, `PASSWORD`, `SESSION`) VALUES
-('ss', 'aa', 'tt', 'asdf', 1, 'dfas@email.com', '1', 0),
-('studenbt', 'asdfasfdasddfasf', '2asdfaf', 'BSIT', 4, '3@email.com', '2', 0),
-('4', '4', '4', '4', 1, '4@email.com', '4', 0),
-('5', '5', '5', '5', 4, '5@email.com', '5', 0),
-('6', '6', '6', 'BSIT', 4, '6@email.com', '6', 0),
-('7', '7', '7', 'BSIT', 1, '7@email.ccom', '7', 0),
-('6', '4', '6', 'BSIT', 1, 'dfas@email.com', '123', 0),
-('12', '12', '12', 'BSIT', 1, '12@email.com', '12', 30),
-('pats', 'pc', 't', 'BSIT', 1, 'dfas@email.com', '2222', 0),
-('patino', 'paul', 'te', 'ACT', 4, 'patinopc@gmail.com', 'sample', 0);
+INSERT INTO `sit-in` (`ID`, `STUDENT_ID`, `LABORATORY`, `PURPOSE`, `SESSION_DATE`, `STATUS`) VALUES
+(1, 3000, '524', '.NET Programming', '0000-00-00', 'Inactive'),
+(2, 3000, '544', 'PHP Programming', '0000-00-00', 'Inactive'),
+(3, 4000, '544', 'JAVA Programming', '0000-00-00', 'Inactive'),
+(4, 2000, '524', 'C Programming', '0000-00-00', 'Inactive'),
+(5, 3000, '528', 'C Programming', '0000-00-00', 'Inactive'),
+(6, 4000, '544', 'JAVA Programming', '0000-00-00', 'Inactive'),
+(7, 4000, '530', 'JAVA Programming', '2025-03-23', 'Inactive'),
+(8, 3000, '530', 'C Programming', '2025-03-23', 'Active');
 
 -- --------------------------------------------------------
 
@@ -74,14 +98,90 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`IDNO`, `LASTNAME`, `FIRSTNAME`, `MIDDLENAME`, `COURSE`, `YEAR`, `EMAIL`, `PASSWORD`, `SESSION`, `ROLE`) VALUES
+(1000, 'Pat', 'Paul', 'T', 'BSIT', 4, 'pat@email.com', 'admin', 30, 'admin'),
+(2000, 'DESO', 'LATOR', NULL, 'BSEd', 3, 'lator@email.com', '2000', 14, 'Student'),
+(3000, 'eul', 'scepter', 's', 'BSIT', 1, 'eul@email.com', '3000', 24, 'Student'),
+(4000, 'staff', 'force', 'g', 'NAME', 2, 'force@email.com', '4000', 13, 'Student'),
+(5000, 'cape', 'glimmer', 'a', 'BSIT', 1, 'glimmer@email.com', '5000', 30, 'Student');
+
+--
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `announcement`
+--
+ALTER TABLE `announcement`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `FK_ADMIN_ID` (`ADMIN_ID`);
+
+--
+-- Indexes for table `feedback`
+--
+ALTER TABLE `feedback`
+  ADD PRIMARY KEY (`FEEDBACK_ID`),
+  ADD KEY `FK_FEEDBACK_STUDENT_ID` (`STUDENT_ID`);
+
+--
+-- Indexes for table `sit-in`
+--
+ALTER TABLE `sit-in`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `FK_STUDENT_ID` (`STUDENT_ID`);
 
 --
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`IDNO`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `announcement`
+--
+ALTER TABLE `announcement`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `feedback`
+--
+ALTER TABLE `feedback`
+  MODIFY `FEEDBACK_ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `sit-in`
+--
+ALTER TABLE `sit-in`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `announcement`
+--
+ALTER TABLE `announcement`
+  ADD CONSTRAINT `FK_ADMIN_ID` FOREIGN KEY (`ADMIN_ID`) REFERENCES `user` (`IDNO`);
+
+--
+-- Constraints for table `feedback`
+--
+ALTER TABLE `feedback`
+  ADD CONSTRAINT `FK_FEEDBACK_STUDENT_ID` FOREIGN KEY (`STUDENT_ID`) REFERENCES `user` (`IDNO`);
+
+--
+-- Constraints for table `sit-in`
+--
+ALTER TABLE `sit-in`
+  ADD CONSTRAINT `FK_STUDENT_ID` FOREIGN KEY (`STUDENT_ID`) REFERENCES `user` (`IDNO`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
