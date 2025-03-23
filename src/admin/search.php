@@ -16,15 +16,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sit_in'])) {
         $student_id = $_POST['student_id'];
         $purpose = $_POST['purpose'];
         $lab = $_POST['lab'];
-        $current_date = date('Y-m-d'); // Get current date and time
+        $current_date = date('Y-m-d');
+        $current_time = date('H:i:s');
         
         // Start transaction
         $conn->begin_transaction();
         try {
-            // Insert into sit-in table with session date
-            $insert_query = "INSERT INTO `sit-in` (STUDENT_ID, PURPOSE, LABORATORY, STATUS, SESSION_DATE) VALUES (?, ?, ?, 'Active', ?)";
+            // Insert into sit-in table with session date and login time
+            $insert_query = "INSERT INTO `sit-in` (STUDENT_ID, PURPOSE, LABORATORY, STATUS, SESSION_DATE, LOGIN_TIME) VALUES (?, ?, ?, 'Active', ?, ?)";
             $stmt = $conn->prepare($insert_query);
-            $stmt->bind_param("isss", $student_id, $purpose, $lab, $current_date);
+            $stmt->bind_param("issss", $student_id, $purpose, $lab, $current_date, $current_time);
             $stmt->execute();
             $stmt->close();
 

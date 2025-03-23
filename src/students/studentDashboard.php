@@ -17,7 +17,27 @@
         unset($_SESSION['update_success']);
     }
 
+    if (isset($_GET['feedback_success'])) {
+        echo "<script type='text/javascript'>alert('Feedback submitted successfully!');</script>";
+    }
+
     $user_id = $_SESSION['user_id'];
+
+    // Count pending feedback sessions
+    $pending_feedback_count = 0;
+    if ($conn) {
+        $query = "SELECT COUNT(*) as count FROM `sit-in` s 
+                  LEFT JOIN feedback f ON (s.STUDENT_ID = f.STUDENT_ID AND s.SESSION_DATE = f.SESSION_DATE AND s.LABORATORY = f.LABORATORY)
+                  WHERE s.STUDENT_ID = ? AND s.STATUS = 'Inactive' AND f.FEEDBACK_ID IS NULL";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            $pending_feedback_count = $row['count'];
+        }
+        $stmt->close();
+    }
 
     // Fetch user information
     $stmt = $conn->prepare("SELECT * FROM user WHERE IDNO = ?");
@@ -118,6 +138,12 @@
                 <p><b>Year Level</b>: <?php echo htmlspecialchars($user['YEAR']); ?></p>
                 <p><b>Email</b>: <?php echo htmlspecialchars($user['EMAIL']); ?></p>
                 <p><b>Session</b>: <?php echo htmlspecialchars($user['SESSION']); ?></p>
+                <?php if ($pending_feedback_count > 0): ?>
+                    <div class="w3-panel w3-pale-yellow">
+                        <p>You have <?php echo $pending_feedback_count; ?> session(s) pending feedback</p>
+                        <a href="feedback.php" class="w3-button w3-yellow w3-round">Submit Feedback</a>
+                    </div>
+                <?php endif; ?>
             </div>
             <footer>
                 <form action="studentDashboard.php" method="post">

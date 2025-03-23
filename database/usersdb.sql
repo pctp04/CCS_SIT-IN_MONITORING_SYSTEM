@@ -61,6 +61,8 @@ CREATE TABLE `sit-in` (
   `LABORATORY` varchar(50) NOT NULL,
   `PURPOSE` varchar(50) NOT NULL,
   `SESSION_DATE` date NOT NULL,
+  `LOGIN_TIME` time DEFAULT NULL,
+  `LOGOUT_TIME` time DEFAULT NULL,
   `STATUS` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -68,15 +70,15 @@ CREATE TABLE `sit-in` (
 -- Dumping data for table `sit-in`
 --
 
-INSERT INTO `sit-in` (`ID`, `STUDENT_ID`, `LABORATORY`, `PURPOSE`, `SESSION_DATE`, `STATUS`) VALUES
-(1, 3000, '524', '.NET Programming', '0000-00-00', 'Inactive'),
-(2, 3000, '544', 'PHP Programming', '0000-00-00', 'Inactive'),
-(3, 4000, '544', 'JAVA Programming', '0000-00-00', 'Inactive'),
-(4, 2000, '524', 'C Programming', '0000-00-00', 'Inactive'),
-(5, 3000, '528', 'C Programming', '0000-00-00', 'Inactive'),
-(6, 4000, '544', 'JAVA Programming', '0000-00-00', 'Inactive'),
-(7, 4000, '530', 'JAVA Programming', '2025-03-23', 'Inactive'),
-(8, 3000, '530', 'C Programming', '2025-03-23', 'Active');
+INSERT INTO `sit-in` (`ID`, `STUDENT_ID`, `LABORATORY`, `PURPOSE`, `SESSION_DATE`, `LOGIN_TIME`, `LOGOUT_TIME`, `STATUS`) VALUES
+(1, 3000, '524', '.NET Programming', '2025-03-23', '11:23:27', '11:23:32', 'Inactive'),
+(2, 3000, '544', 'PHP Programming', '2025-03-23', '10:38:45', '10:39:05', 'Inactive'),
+(3, 4000, '544', 'JAVA Programming', '2025-03-23', '12:56:44', '12:56:59', 'Inactive'),
+(4, 2000, '524', 'C Programming', '2025-03-23', '05:57:27', '05:57:42', 'Inactive'),
+(5, 3000, '528', 'C Programming', '2025-03-23', '11:40:07', '11:40:57', 'Inactive'),
+(6, 4000, '544', 'JAVA Programming', '2025-03-23', '11:14:46', '12:01:11', 'Inactive'),
+(7, 4000, '530', 'JAVA Programming', '2025-03-23', '05:06:27', '05:06:42', 'Inactive'),
+(8, 3000, '530', 'C Programming', '2025-03-23', '11:40:07', NULL, 'Active');
 
 -- --------------------------------------------------------
 

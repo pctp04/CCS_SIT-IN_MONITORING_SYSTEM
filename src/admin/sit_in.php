@@ -13,10 +13,12 @@ if(isset($_GET['logout']) && isset($_GET['id'])) {
         // Start transaction
         $conn->begin_transaction();
         try {
-            // Update sit-in status to Inactive
-            $update_sitin_query = "UPDATE `sit-in` SET STATUS = 'Inactive' WHERE STUDENT_ID = ? AND STATUS = 'Active'";
+            $current_time = date('H:i:s');
+            
+            // Update sit-in status to Inactive and set logout time
+            $update_sitin_query = "UPDATE `sit-in` SET STATUS = 'Inactive', LOGOUT_TIME = ? WHERE STUDENT_ID = ? AND STATUS = 'Active'";
             $stmt = $conn->prepare($update_sitin_query);
-            $stmt->bind_param("i", $student_id);
+            $stmt->bind_param("si", $current_time, $student_id);
             $stmt->execute();
             $stmt->close();
 
@@ -45,14 +47,18 @@ $start_from = ($current_page - 1) * $entries_per_page;
 
 // Only show students with active sessions
 if($conn) {
-    $query = "SELECT u.*, s.ID as SIT_ID, s.PURPOSE, s.LABORATORY, s.STATUS as SIT_STATUS 
+    $query = "SELECT u.*, s.ID as SIT_ID, s.PURPOSE, s.LABORATORY, s.STATUS as SIT_STATUS,
+              TIME_FORMAT(s.LOGIN_TIME, '%h:%i%p') as LOGIN_TIME,
+              TIME_FORMAT(s.LOGOUT_TIME, '%h:%i%p') as LOGOUT_TIME
               FROM user u 
               INNER JOIN `sit-in` s ON u.IDNO = s.STUDENT_ID 
               WHERE u.ROLE = 'student' AND s.STATUS = 'Active' 
               LIMIT $start_from, $entries_per_page";
     if (isset($_GET['search'])) {
         $search = $_GET['search'];
-        $query = "SELECT u.*, s.ID as SIT_ID, s.PURPOSE, s.LABORATORY, s.STATUS as SIT_STATUS 
+        $query = "SELECT u.*, s.ID as SIT_ID, s.PURPOSE, s.LABORATORY, s.STATUS as SIT_STATUS,
+                 TIME_FORMAT(s.LOGIN_TIME, '%h:%i%p') as LOGIN_TIME,
+                 TIME_FORMAT(s.LOGOUT_TIME, '%h:%i%p') as LOGOUT_TIME
                  FROM user u 
                  INNER JOIN `sit-in` s ON u.IDNO = s.STUDENT_ID 
                  WHERE u.ROLE = 'student' AND s.STATUS = 'Active' 
@@ -126,6 +132,7 @@ if($conn) {
                             echo "<td>" . ($row['PURPOSE'] ?? 'N/A') . "</td>";
                             echo "<td>" . ($row['LABORATORY'] ?? 'N/A') . "</td>";
                             echo "<td>" . $row['SESSION'] . "</td>";
+
                             echo "<td>" . 'Active' . "</td>";
                             echo "<td>";
                             if($row['SIT_STATUS'] === 'Active') {

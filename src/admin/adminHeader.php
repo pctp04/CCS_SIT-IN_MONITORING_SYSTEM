@@ -17,8 +17,8 @@
     }elseif(isset($_POST["reports"])){
         header("Location: reports.php");
         exit();
-    }elseif(isset($_POST["feedback"])){
-        header("Location: feedback.php");
+    }elseif(isset($_POST["feedbackReports"])){
+        header("Location: feedbackReports.php");
         exit();
     }elseif(isset($_POST["reservation"])){
         header("Location: reservation.php");
@@ -153,7 +153,7 @@
                 <button type="submit" name="sit-in" class="nav-button">Current Sit-in</button>
                 <button type="submit" name="viewSit-in" class="nav-button">View Sit-in Records</button>
                 <button type="submit" name="reports" class="nav-button">Sit-in Reports</button>
-                <button type="submit" name="feedback" class="nav-button">Feedback Reports</button>
+                <button type="submit" name="feedbackReports" class="nav-button">Feedback Reports</button>
                 <button type="submit" name="reservation" class="nav-button">Reservation</button>
                 <button type="submit" name="logout" class="logout-button">Logout</button>
             </form>
