@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 23, 2025 at 04:35 PM
+-- Generation Time: Mar 23, 2025 at 07:28 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -35,6 +35,14 @@ CREATE TABLE `announcement` (
   `ADMIN_ID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `announcement`
+--
+
+INSERT INTO `announcement` (`ID`, `TITLE`, `CONTENT`, `CREATED_AT`, `ADMIN_ID`) VALUES
+(1, '', 'Hello', '2025-03-23 23:42:37', 1000),
+(2, '', 'test', '2025-03-24 01:26:14', 1000);
+
 -- --------------------------------------------------------
 
 --
@@ -48,6 +56,14 @@ CREATE TABLE `feedback` (
   `SESSION_DATE` date NOT NULL,
   `FEEDBACK_MSG` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `feedback`
+--
+
+INSERT INTO `feedback` (`FEEDBACK_ID`, `STUDENT_ID`, `LABORATORY`, `SESSION_DATE`, `FEEDBACK_MSG`) VALUES
+(1, 2000, '524', '2025-03-23', 'hi'),
+(2, 2000, '524', '0000-00-00', 'yay');
 
 -- --------------------------------------------------------
 
@@ -71,14 +87,20 @@ CREATE TABLE `sit-in` (
 --
 
 INSERT INTO `sit-in` (`ID`, `STUDENT_ID`, `LABORATORY`, `PURPOSE`, `SESSION_DATE`, `LOGIN_TIME`, `LOGOUT_TIME`, `STATUS`) VALUES
-(1, 3000, '524', '.NET Programming', '2025-03-23', '11:23:27', '11:23:32', 'Inactive'),
-(2, 3000, '544', 'PHP Programming', '2025-03-23', '10:38:45', '10:39:05', 'Inactive'),
-(3, 4000, '544', 'JAVA Programming', '2025-03-23', '12:56:44', '12:56:59', 'Inactive'),
-(4, 2000, '524', 'C Programming', '2025-03-23', '05:57:27', '05:57:42', 'Inactive'),
-(5, 3000, '528', 'C Programming', '2025-03-23', '11:40:07', '11:40:57', 'Inactive'),
-(6, 4000, '544', 'JAVA Programming', '2025-03-23', '11:14:46', '12:01:11', 'Inactive'),
-(7, 4000, '530', 'JAVA Programming', '2025-03-23', '05:06:27', '05:06:42', 'Inactive'),
-(8, 3000, '530', 'C Programming', '2025-03-23', '11:40:07', NULL, 'Active');
+(1, 3000, '524', '.NET Programming', '0000-00-00', NULL, NULL, 'Inactive'),
+(2, 3000, '544', 'PHP Programming', '0000-00-00', NULL, NULL, 'Inactive'),
+(3, 4000, '544', 'JAVA Programming', '0000-00-00', NULL, NULL, 'Inactive'),
+(4, 2000, '524', 'C Programming', '0000-00-00', NULL, NULL, 'Inactive'),
+(5, 3000, '528', 'C Programming', '0000-00-00', NULL, NULL, 'Inactive'),
+(6, 4000, '544', 'JAVA Programming', '0000-00-00', NULL, NULL, 'Inactive'),
+(7, 4000, '530', 'JAVA Programming', '2025-03-23', NULL, NULL, 'Inactive'),
+(8, 3000, '530', 'C Programming', '2025-03-23', NULL, NULL, 'Inactive'),
+(9, 3000, '544', '.NET Programming', '2025-03-23', NULL, NULL, 'Inactive'),
+(10, 2000, '524', 'C# Programming', '2025-03-23', '19:04:11', '19:04:29', 'Inactive'),
+(11, 5000, '524', 'C Programming', '2025-03-23', '19:04:16', '19:04:25', 'Inactive'),
+(12, 2000, '524', 'C Programming', '2025-03-23', '19:26:06', '19:26:08', 'Inactive'),
+(13, 4000, '530', 'C Programming', '2025-03-23', '19:26:16', '19:26:19', 'Inactive'),
+(14, 4000, '530', 'PHP Programming', '2025-03-23', '19:26:25', NULL, 'Active');
 
 -- --------------------------------------------------------
 
@@ -105,10 +127,10 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`IDNO`, `LASTNAME`, `FIRSTNAME`, `MIDDLENAME`, `COURSE`, `YEAR`, `EMAIL`, `PASSWORD`, `SESSION`, `ROLE`) VALUES
 (1000, 'Pat', 'Paul', 'T', 'BSIT', 4, 'pat@email.com', 'admin', 30, 'admin'),
-(2000, 'DESO', 'LATOR', NULL, 'BSEd', 3, 'lator@email.com', '2000', 14, 'Student'),
-(3000, 'eul', 'scepter', 's', 'BSIT', 1, 'eul@email.com', '3000', 24, 'Student'),
-(4000, 'staff', 'force', 'g', 'NAME', 2, 'force@email.com', '4000', 13, 'Student'),
-(5000, 'cape', 'glimmer', 'a', 'BSIT', 1, 'glimmer@email.com', '5000', 30, 'Student');
+(2000, 'DESO', 'LATOR', NULL, 'BSEd', 3, 'lator@email.com', '2000', 12, 'Student'),
+(3000, 'eul', 'scepter', 's', 'BSIT', 1, 'eul@email.com', '3000', 23, 'Student'),
+(4000, 'staff', 'force', 'g', 'NAME', 2, 'force@email.com', '4000', 12, 'Student'),
+(5000, 'cape', 'glimmer', 'a', 'BSIT', 1, 'glimmer@email.com', '5000', 29, 'Student');
 
 --
 -- Indexes for dumped tables
@@ -149,19 +171,19 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `announcement`
 --
 ALTER TABLE `announcement`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `feedback`
 --
 ALTER TABLE `feedback`
-  MODIFY `FEEDBACK_ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `FEEDBACK_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `sit-in`
 --
 ALTER TABLE `sit-in`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Constraints for dumped tables
