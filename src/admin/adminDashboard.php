@@ -119,7 +119,7 @@
         <div class="dashboard-container">
             <!-- Left Side - Statistics -->
             <div class="stats-container">
-                <h2 class="w3-center">Statistics</h2>
+                <h2 class="w3-center">Statistic</h2>
                 
                 <div class="stat-box w3-card w3-padding">
                     <h3>Students Registered: <?php echo $stats['registered']; ?></h3>
