@@ -3,25 +3,25 @@
     mysqli_close($conn);
 
     if(isset($_POST["home"])){
-        header("Location: adminDashboard.php?v=" . time());
+        header("Location: adminDashboard.php");
         exit();
     }elseif(isset($_POST["students"])){
-        header("Location: students.php?v=" . time());
+        header("Location: students.php");
         exit();
     }elseif(isset($_POST["sit-in"])){
-        header("Location: sit_in.php?v=" . time());
+        header("Location: sit_in.php");
         exit();
     }elseif(isset($_POST["viewSit-in"])){
-        header("Location: viewRecords.php?v=" . time());
+        header("Location: viewRecords.php");
         exit();
     }elseif(isset($_POST["reports"])){
-        header("Location: reports.php?v=" . time());
+        header("Location: reports.php");
         exit();
     }elseif(isset($_POST["feedbackReports"])){
-        header("Location: feedbackReports.php?v=" . time());
+        header("Location: feedbackReports.php");
         exit();
     }elseif(isset($_POST["reservation"])){
-        header("Location: reservation.php?v=" . time());
+        header("Location: reservation.php");
         exit();
     }elseif(isset($_POST["logout"])){
         session_start();
