@@ -9,6 +9,29 @@ include(__DIR__ . '/../../database.php');
 // Get the date filter if set
 $date_filter = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
 
+// Get total number of records for pagination
+$total_records = 0;
+if ($conn) {
+    $count_query = "SELECT COUNT(*) as count 
+                    FROM `sit-in` s
+                    JOIN user u ON s.STUDENT_ID = u.IDNO
+                    WHERE DATE(s.SESSION_DATE) = ?";
+    $stmt = $conn->prepare($count_query);
+    $stmt->bind_param("s", $date_filter);
+    $stmt->execute();
+    $count_result = $stmt->get_result();
+    if ($count_result) {
+        $total_records = $count_result->fetch_assoc()['count'];
+    }
+    $stmt->close();
+}
+
+// Calculate pagination values
+$entries_per_page = isset($_GET['entries']) ? (int)$_GET['entries'] : 10;
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$total_pages = ceil($total_records / $entries_per_page);
+$start_from = ($current_page - 1) * $entries_per_page;
+
 // Fetch sit-in records with user information
 if($conn) {
     $query = "SELECT s.ID, s.STUDENT_ID, CONCAT(u.LASTNAME, ', ', u.FIRSTNAME) as NAME,
@@ -19,10 +42,11 @@ if($conn) {
               FROM `sit-in` s
               JOIN user u ON s.STUDENT_ID = u.IDNO
               WHERE DATE(s.SESSION_DATE) = ?
-              ORDER BY s.ID DESC";
+              ORDER BY s.ID DESC
+              LIMIT ?, ?";
               
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $date_filter);
+    $stmt->bind_param("sii", $date_filter, $start_from, $entries_per_page);
     $stmt->execute();
     $result = $stmt->get_result();
     $stmt->close();
@@ -140,6 +164,52 @@ if($conn) {
                         ?>
                     </tbody>
                 </table>
+
+                <!-- Pagination -->
+                <div class="w3-bar w3-center w3-margin-top">
+                    <?php if ($total_pages > 1): ?>
+                        <?php if ($current_page > 1): ?>
+                            <a href="?page=1&entries=<?php echo $entries_per_page; ?>&date=<?php echo $date_filter; ?>" class="w3-button">&laquo; First</a>
+                            <a href="?page=<?php echo ($current_page - 1); ?>&entries=<?php echo $entries_per_page; ?>&date=<?php echo $date_filter; ?>" class="w3-button">&laquo;</a>
+                        <?php endif; ?>
+
+                        <?php
+                        $start_page = max(1, $current_page - 2);
+                        $end_page = min($total_pages, $current_page + 2);
+
+                        for ($i = $start_page; $i <= $end_page; $i++): ?>
+                            <?php if ($i == $current_page): ?>
+                                <span class="w3-button w3-blue"><?php echo $i; ?></span>
+                            <?php else: ?>
+                                <a href="?page=<?php echo $i; ?>&entries=<?php echo $entries_per_page; ?>&date=<?php echo $date_filter; ?>" class="w3-button"><?php echo $i; ?></a>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+
+                        <?php if ($current_page < $total_pages): ?>
+                            <a href="?page=<?php echo ($current_page + 1); ?>&entries=<?php echo $entries_per_page; ?>&date=<?php echo $date_filter; ?>" class="w3-button">&raquo;</a>
+                            <a href="?page=<?php echo $total_pages; ?>&entries=<?php echo $entries_per_page; ?>&date=<?php echo $date_filter; ?>" class="w3-button">Last &raquo;</a>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+
+                <div class="w3-center w3-margin-top">
+                    <p>Showing <?php echo ($start_from + 1); ?>-<?php echo min($start_from + $entries_per_page, $total_records); ?> of <?php echo $total_records; ?> entries</p>
+                </div>
+
+                <!-- Add entries per page dropdown -->
+                <div class="w3-margin-top">
+                    <form method="get" style="display: inline-block;">
+                        <input type="hidden" name="date" value="<?php echo $date_filter; ?>">
+                        <label for="entries">Show entries:</label>
+                        <select name="entries" id="entries" onchange="this.form.submit()" class="w3-select" style="width: auto;">
+                            <option value="5" <?php if ($entries_per_page == 5) echo "selected"; ?>>5</option>
+                            <option value="10" <?php if ($entries_per_page == 10) echo "selected"; ?>>10</option>
+                            <option value="25" <?php if ($entries_per_page == 25) echo "selected"; ?>>25</option>
+                            <option value="50" <?php if ($entries_per_page == 50) echo "selected"; ?>>50</option>
+                            <option value="100" <?php if ($entries_per_page == 100) echo "selected"; ?>>100</option>
+                        </select>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

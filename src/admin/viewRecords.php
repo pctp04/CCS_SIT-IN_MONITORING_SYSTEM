@@ -30,6 +30,22 @@ if ($conn) {
     }
 }
 
+// Get total number of records for pagination
+$total_records = 0;
+if ($conn) {
+    $count_query = "SELECT COUNT(*) as count FROM `sit-in` s JOIN user u ON s.STUDENT_ID = u.IDNO";
+    $count_result = $conn->query($count_query);
+    if ($count_result) {
+        $total_records = $count_result->fetch_assoc()['count'];
+    }
+}
+
+// Calculate pagination values
+$entries_per_page = isset($_GET['entries']) ? (int)$_GET['entries'] : 10;
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$total_pages = ceil($total_records / $entries_per_page);
+$start_from = ($current_page - 1) * $entries_per_page;
+
 // Fetch all sit-in records with user information
 $records = [];
 if ($conn) {
@@ -40,12 +56,17 @@ if ($conn) {
               DATE_FORMAT(s.SESSION_DATE, '%Y-%m-%d') as DATE
               FROM `sit-in` s
               JOIN user u ON s.STUDENT_ID = u.IDNO
-              ORDER BY s.SESSION_DATE DESC, s.ID DESC";
+              ORDER BY s.SESSION_DATE DESC, s.ID DESC
+              LIMIT ?, ?";
               
-    $result = $conn->query($query);
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ii", $start_from, $entries_per_page);
+    $stmt->execute();
+    $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {
         $records[] = $row;
     }
+    $stmt->close();
 }
 ?>
 
@@ -118,6 +139,7 @@ if ($conn) {
                             <div class="entries-control">
                                 <label>Show entries:</label>
                                 <select id="entriesSelect" class="w3-select w3-border" style="width: 100px">
+                                    <option value="5">5</option>
                                     <option value="10">10</option>
                                     <option value="25">25</option>
                                     <option value="50">50</option>
@@ -162,6 +184,37 @@ if ($conn) {
                             <?php endforeach; ?>
                         </tbody>
                     </table>
+
+                    <!-- Pagination -->
+                    <div class="w3-bar w3-center w3-margin-top">
+                        <?php if ($total_pages > 1): ?>
+                            <?php if ($current_page > 1): ?>
+                                <a href="?page=1&entries=<?php echo $entries_per_page; ?>" class="w3-button">&laquo; First</a>
+                                <a href="?page=<?php echo ($current_page - 1); ?>&entries=<?php echo $entries_per_page; ?>" class="w3-button">&laquo;</a>
+                            <?php endif; ?>
+
+                            <?php
+                            $start_page = max(1, $current_page - 2);
+                            $end_page = min($total_pages, $current_page + 2);
+
+                            for ($i = $start_page; $i <= $end_page; $i++): ?>
+                                <?php if ($i == $current_page): ?>
+                                    <span class="w3-button w3-blue"><?php echo $i; ?></span>
+                                <?php else: ?>
+                                    <a href="?page=<?php echo $i; ?>&entries=<?php echo $entries_per_page; ?>" class="w3-button"><?php echo $i; ?></a>
+                                <?php endif; ?>
+                            <?php endfor; ?>
+
+                            <?php if ($current_page < $total_pages): ?>
+                                <a href="?page=<?php echo ($current_page + 1); ?>&entries=<?php echo $entries_per_page; ?>" class="w3-button">&raquo;</a>
+                                <a href="?page=<?php echo $total_pages; ?>&entries=<?php echo $entries_per_page; ?>" class="w3-button">Last &raquo;</a>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="w3-center w3-margin-top">
+                        <p>Showing <?php echo ($start_from + 1); ?>-<?php echo min($start_from + $entries_per_page, $total_records); ?> of <?php echo $total_records; ?> entries</p>
+                    </div>
                 </div>
             </div>
         </div>

@@ -151,6 +151,7 @@
                 <button type="button" id="searchButton" class="nav-button">Search</button>
                 <button type="submit" name="students" class="nav-button">Students</button>
                 <button type="submit" name="sit-in" class="nav-button">Current Sit-in</button>
+                <button type="submit" name="viewSit-in" class="nav-button">View Sit-in Records</button>
                 <button type="submit" name="reports" class="nav-button">Sit-in Reports</button>
                 <button type="submit" name="feedbackReports" class="nav-button">Feedback Reports</button>
                 <button type="submit" name="reservation" class="nav-button">Reservation</button>

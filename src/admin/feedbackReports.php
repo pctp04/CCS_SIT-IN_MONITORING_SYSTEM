@@ -48,6 +48,32 @@ if ($conn) {
     }
     $stmt->close();
 }
+
+// Get total number of records for pagination
+$total_records = 0;
+if ($conn) {
+    $count_query = "SELECT COUNT(*) as count FROM feedback f JOIN user u ON f.STUDENT_ID = u.IDNO";
+    if (isset($_GET['search'])) {
+        $search = $_GET['search'];
+        $count_query .= " WHERE u.IDNO LIKE ? OR u.LASTNAME LIKE ? OR u.FIRSTNAME LIKE ? 
+                         OR f.LABORATORY LIKE ? OR f.FEEDBACK_MSG LIKE ?";
+        $stmt = $conn->prepare($count_query);
+        $search_param = "%$search%";
+        $stmt->bind_param("sssss", $search_param, $search_param, $search_param, $search_param, $search_param);
+    } else {
+        $stmt = $conn->prepare($count_query);
+    }
+    $stmt->execute();
+    $count_result = $stmt->get_result();
+    if ($count_result) {
+        $total_records = $count_result->fetch_assoc()['count'];
+    }
+    $stmt->close();
+}
+
+// Calculate pagination values
+$total_pages = ceil($total_records / $entries_per_page);
+$start_from = ($current_page - 1) * $entries_per_page;
 ?>
 
 <!DOCTYPE html>
@@ -128,6 +154,37 @@ if ($conn) {
                             <?php endif; ?>
                         </tbody>
                     </table>
+
+                    <!-- Pagination -->
+                    <div class="w3-bar w3-center w3-margin-top">
+                        <?php if ($total_pages > 1): ?>
+                            <?php if ($current_page > 1): ?>
+                                <a href="?page=1&entries=<?php echo $entries_per_page; ?><?php echo isset($_GET['search']) ? '&search=' . htmlspecialchars($_GET['search']) : ''; ?>" class="w3-button">&laquo; First</a>
+                                <a href="?page=<?php echo ($current_page - 1); ?>&entries=<?php echo $entries_per_page; ?><?php echo isset($_GET['search']) ? '&search=' . htmlspecialchars($_GET['search']) : ''; ?>" class="w3-button">&laquo;</a>
+                            <?php endif; ?>
+
+                            <?php
+                            $start_page = max(1, $current_page - 2);
+                            $end_page = min($total_pages, $current_page + 2);
+
+                            for ($i = $start_page; $i <= $end_page; $i++): ?>
+                                <?php if ($i == $current_page): ?>
+                                    <span class="w3-button w3-blue"><?php echo $i; ?></span>
+                                <?php else: ?>
+                                    <a href="?page=<?php echo $i; ?>&entries=<?php echo $entries_per_page; ?><?php echo isset($_GET['search']) ? '&search=' . htmlspecialchars($_GET['search']) : ''; ?>" class="w3-button"><?php echo $i; ?></a>
+                                <?php endif; ?>
+                            <?php endfor; ?>
+
+                            <?php if ($current_page < $total_pages): ?>
+                                <a href="?page=<?php echo ($current_page + 1); ?>&entries=<?php echo $entries_per_page; ?><?php echo isset($_GET['search']) ? '&search=' . htmlspecialchars($_GET['search']) : ''; ?>" class="w3-button">&raquo;</a>
+                                <a href="?page=<?php echo $total_pages; ?>&entries=<?php echo $entries_per_page; ?><?php echo isset($_GET['search']) ? '&search=' . htmlspecialchars($_GET['search']) : ''; ?>" class="w3-button">Last &raquo;</a>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="w3-center w3-margin-top">
+                        <p>Showing <?php echo ($start_from + 1); ?>-<?php echo min($start_from + $entries_per_page, $total_records); ?> of <?php echo $total_records; ?> entries</p>
+                    </div>
                 </div>
 
                 <!-- Print Button -->

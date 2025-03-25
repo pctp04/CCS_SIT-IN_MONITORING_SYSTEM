@@ -66,6 +66,33 @@
             }
         }
 
+        // Handle announcement deletion
+        if(isset($_GET['delete_announcement'])) {
+            $announcement_id = $_GET['delete_announcement'];
+            $query = "DELETE FROM announcement WHERE ID = ?";
+            if($stmt = $conn->prepare($query)) {
+                $stmt->bind_param("i", $announcement_id);
+                $stmt->execute();
+                $stmt->close();
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit();
+            }
+        }
+
+        // Handle announcement edit
+        if(isset($_POST['edit_announcement'])) {
+            $announcement_id = $_POST['announcement_id'];
+            $edited_content = $_POST['edited_content'];
+            $query = "UPDATE announcement SET CONTENT = ? WHERE ID = ?";
+            if($stmt = $conn->prepare($query)) {
+                $stmt->bind_param("si", $edited_content, $announcement_id);
+                $stmt->execute();
+                $stmt->close();
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit();
+            }
+        }
+
         // Get existing announcements
         $query = "SELECT a.*, u.FIRSTNAME, u.LASTNAME, DATE_FORMAT(a.CREATED_AT, '%Y-%m-%d') as FORMATTED_DATE 
                   FROM announcement a 
@@ -155,8 +182,25 @@
                         <?php if($announcements && $announcements->num_rows > 0): ?>
                             <?php while($row = $announcements->fetch_assoc()): ?>
                                 <div class="w3-card w3-padding w3-margin-bottom">
-                                    <p class="w3-text-grey">CCS Admin | <?php echo $row['FORMATTED_DATE']; ?></p>
-                                    <p><?php echo htmlspecialchars($row['CONTENT']); ?></p>
+                                    <div class="w3-row">
+                                        <div class="w3-col s12">
+                                            <p class="w3-text-grey" style="margin-bottom: 8px;">
+                                                CCS Admin | <?php echo $row['FORMATTED_DATE']; ?>
+                                                <span class="w3-right">
+                                                    <button onclick="openEditModal(<?php echo $row['ID']; ?>, '<?php echo addslashes($row['CONTENT']); ?>')" 
+                                                            class="w3-button w3-text-blue" style="padding: 0px 8px;">
+                                                        Edit
+                                                    </button>
+                                                    <a href="?delete_announcement=<?php echo $row['ID']; ?>" 
+                                                       onclick="return confirm('Are you sure you want to delete this announcement?')"
+                                                       class="w3-button w3-text-red" style="padding: 0px 8px;">
+                                                        Delete
+                                                    </a>
+                                                </span>
+                                            </p>
+                                            <p style="margin-top: 0;"><?php echo htmlspecialchars($row['CONTENT']); ?></p>
+                                        </div>
+                                    </div>
                                 </div>
                             <?php endwhile; ?>
                         <?php else: ?>
@@ -165,6 +209,30 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Edit Announcement Modal -->
+    <div id="editModal" class="w3-modal">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+            <header class="w3-container w3-blue">
+                <span onclick="document.getElementById('editModal').style.display='none'" 
+                      class="w3-button w3-display-topright">&times;</span>
+                <h2>Edit Announcement</h2>
+            </header>
+
+            <form class="w3-container" method="post">
+                <input type="hidden" name="announcement_id" id="edit_announcement_id">
+                <div class="w3-padding">
+                    <label>Content:</label>
+                    <textarea name="edited_content" id="edit_content" class="w3-input w3-border" rows="4" required></textarea>
+                </div>
+                <div class="w3-container w3-border-top w3-padding-16 w3-light-grey">
+                    <button type="submit" name="edit_announcement" class="w3-button w3-blue">Save Changes</button>
+                    <button type="button" onclick="document.getElementById('editModal').style.display='none'" 
+                            class="w3-button w3-red w3-right">Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -199,6 +267,12 @@
                 }
             }
         });
+
+        function openEditModal(id, content) {
+            document.getElementById('edit_announcement_id').value = id;
+            document.getElementById('edit_content').value = content;
+            document.getElementById('editModal').style.display = 'block';
+        }
     </script>
 </body>
 </html>
