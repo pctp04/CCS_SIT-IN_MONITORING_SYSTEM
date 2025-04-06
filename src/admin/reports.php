@@ -125,9 +125,9 @@ if($conn) {
                 </div>
                 
                 <div class="export-buttons">
-                    <button class="export-button w3-light-grey">CSV</button>
-                    <button class="export-button w3-light-grey">PDF</button>
-                    <button class="export-button w3-light-grey">Print</button>
+                    <a href="export.php?type=csv&date=<?php echo $date_filter; ?>" class="export-button w3-light-grey">CSV</a>
+                    <a href="export.php?type=pdf&date=<?php echo $date_filter; ?>" class="export-button w3-light-grey">PDF</a>
+                    <button onclick="window.print()" class="export-button w3-light-grey">Print</button>
                 </div>
             </div>
 
