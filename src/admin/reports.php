@@ -9,6 +9,15 @@ include(__DIR__ . '/../../database.php');
 // Get the date filter if set
 $date_filter = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
 
+// Get sort parameters
+$sort_by = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'id';
+$sort_order = isset($_GET['sort_order']) ? $_GET['sort_order'] : 'DESC';
+
+// Validate sort parameters
+$allowed_sort_fields = ['id', 'student_id', 'name', 'purpose', 'laboratory', 'login', 'logout', 'date'];
+$sort_by = in_array($sort_by, $allowed_sort_fields) ? $sort_by : 'id';
+$sort_order = in_array(strtoupper($sort_order), ['ASC', 'DESC']) ? strtoupper($sort_order) : 'DESC';
+
 // Get total number of records for pagination
 $total_records = 0;
 if ($conn) {
@@ -42,9 +51,38 @@ if($conn) {
               FROM `sit-in` s
               JOIN user u ON s.STUDENT_ID = u.IDNO
               WHERE DATE(s.SESSION_DATE) = ?
-              ORDER BY s.ID DESC
-              LIMIT ?, ?";
-              
+              ORDER BY ";
+
+    // Add sorting based on selected field
+    switch($sort_by) {
+        case 'id':
+            $query .= "s.ID";
+            break;
+        case 'student_id':
+            $query .= "s.STUDENT_ID";
+            break;
+        case 'name':
+            $query .= "u.LASTNAME, u.FIRSTNAME";
+            break;
+        case 'purpose':
+            $query .= "s.PURPOSE";
+            break;
+        case 'laboratory':
+            $query .= "s.LABORATORY";
+            break;
+        case 'login':
+            $query .= "s.LOGIN_TIME";
+            break;
+        case 'logout':
+            $query .= "s.LOGOUT_TIME";
+            break;
+        case 'date':
+            $query .= "s.SESSION_DATE";
+            break;
+    }
+
+    $query .= " $sort_order LIMIT ?, ?";
+
     $stmt = $conn->prepare($query);
     $stmt->bind_param("sii", $date_filter, $start_from, $entries_per_page);
     $stmt->execute();
@@ -125,10 +163,39 @@ if($conn) {
                 </div>
                 
                 <div class="export-buttons">
-                    <a href="export.php?type=csv&date=<?php echo $date_filter; ?>" class="export-button w3-light-grey">CSV</a>
-                    <a href="export.php?type=pdf&date=<?php echo $date_filter; ?>" class="export-button w3-light-grey">PDF</a>
+                    <a href="export.php?type=csv&date=<?php echo $date_filter; ?>&sort_by=<?php echo $sort_by; ?>&sort_order=<?php echo $sort_order; ?>" 
+                       class="export-button w3-light-grey">CSV</a>
+                    <a href="export.php?type=pdf&date=<?php echo $date_filter; ?>&sort_by=<?php echo $sort_by; ?>&sort_order=<?php echo $sort_order; ?>" 
+                       class="export-button w3-light-grey">PDF</a>
                     <button onclick="window.print()" class="export-button w3-light-grey">Print</button>
                 </div>
+            </div>
+
+            <!-- Sort Controls -->
+            <div class="w3-container w3-margin-bottom">
+                <form method="get" class="w3-row">
+                    <input type="hidden" name="date" value="<?php echo $date_filter; ?>">
+                    <div class="w3-col s6">
+                        <label>Sort by:</label>
+                        <select name="sort_by" class="w3-select" onchange="this.form.submit()">
+                            <option value="id" <?php if($sort_by == 'id') echo 'selected'; ?>>ID</option>
+                            <option value="student_id" <?php if($sort_by == 'student_id') echo 'selected'; ?>>Student ID</option>
+                            <option value="name" <?php if($sort_by == 'name') echo 'selected'; ?>>Name</option>
+                            <option value="purpose" <?php if($sort_by == 'purpose') echo 'selected'; ?>>Purpose</option>
+                            <option value="laboratory" <?php if($sort_by == 'laboratory') echo 'selected'; ?>>Laboratory</option>
+                            <option value="login" <?php if($sort_by == 'login') echo 'selected'; ?>>Login Time</option>
+                            <option value="logout" <?php if($sort_by == 'logout') echo 'selected'; ?>>Logout Time</option>
+                            <option value="date" <?php if($sort_by == 'date') echo 'selected'; ?>>Date</option>
+                        </select>
+                    </div>
+                    <div class="w3-col s6">
+                        <label>Order:</label>
+                        <select name="sort_order" class="w3-select" onchange="this.form.submit()">
+                            <option value="ASC" <?php if($sort_order == 'ASC') echo 'selected'; ?>>Ascending</option>
+                            <option value="DESC" <?php if($sort_order == 'DESC') echo 'selected'; ?>>Descending</option>
+                        </select>
+                    </div>
+                </form>
             </div>
 
             <div class="table-container">
