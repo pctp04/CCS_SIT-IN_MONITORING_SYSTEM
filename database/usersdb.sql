@@ -105,6 +105,27 @@ INSERT INTO `sit-in` (`ID`, `STUDENT_ID`, `LABORATORY`, `PURPOSE`, `SESSION_DATE
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `reservation`
+--
+
+CREATE TABLE `reservation` (
+  `RESERVATION_ID` int(11) NOT NULL AUTO_INCREMENT,
+  `STUDENT_ID` int(11) NOT NULL,
+  `LABORATORY` varchar(50) NOT NULL,
+  `PURPOSE` varchar(50) NOT NULL,
+  `RESERVATION_DATE` date NOT NULL,
+  `START_TIME` time NOT NULL,
+  `END_TIME` time NOT NULL,
+  `STATUS` enum('Pending','Approved','Rejected') NOT NULL DEFAULT 'Pending',
+  `CREATED_AT` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`RESERVATION_ID`),
+  KEY `FK_RESERVATION_STUDENT_ID` (`STUDENT_ID`),
+  CONSTRAINT `FK_RESERVATION_STUDENT_ID` FOREIGN KEY (`STUDENT_ID`) REFERENCES `user` (`IDNO`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `user`
 --
 

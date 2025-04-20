@@ -21,7 +21,7 @@
         header("Location: feedbackReports.php");
         exit();
     }elseif(isset($_POST["reservation"])){
-        header("Location: reservation.php");
+        header("Location: manageReservations.php");
         exit();
     }elseif(isset($_POST["logout"])){
         session_start();
