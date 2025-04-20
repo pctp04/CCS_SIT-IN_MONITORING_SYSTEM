@@ -11,15 +11,6 @@ $entries_per_page = isset($_GET['entries']) ? (int)$_GET['entries'] : 10;
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $start_from = ($current_page - 1) * $entries_per_page;
 
-// Get sort parameters
-$sort_by = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'student_id';
-$sort_order = isset($_GET['sort_order']) ? $_GET['sort_order'] : 'DESC';
-
-// Validate sort parameters
-$allowed_sort_fields = ['student_id', 'purpose', 'laboratory'];
-$sort_by = in_array($sort_by, $allowed_sort_fields) ? $sort_by : 'student_id';
-$sort_order = in_array(strtoupper($sort_order), ['ASC', 'DESC']) ? strtoupper($sort_order) : 'DESC';
-
 // Fetch feedback with student information
 $feedbacks = [];
 if ($conn) {
@@ -36,28 +27,7 @@ if ($conn) {
                      OR f.LABORATORY LIKE ? OR f.FEEDBACK_MSG LIKE ?)";
     }
 
-    $query .= " ORDER BY ";
-
-    // Add sorting based on selected field
-    switch($sort_by) {
-        case 'date':
-            $query .= "f.SESSION_DATE";
-            break;
-        case 'student_id':
-            $query .= "f.STUDENT_ID";
-            break;
-        case 'name':
-            $query .= "u.LASTNAME, u.FIRSTNAME";
-            break;
-        case 'laboratory':
-            $query .= "f.LABORATORY";
-            break;
-        case 'feedback':
-            $query .= "f.FEEDBACK_MSG";
-            break;
-    }
-
-    $query .= " $sort_order LIMIT ?, ?";
+    $query .= " ORDER BY f.FEEDBACK_ID DESC LIMIT ?, ?";
 
     $stmt = $conn->prepare($query);
     
@@ -145,33 +115,10 @@ $start_from = ($current_page - 1) * $entries_per_page;
                     </div>
                 </div>
 
-                <!-- Sort Controls -->
-                <div class="w3-container w3-margin-bottom">
-                    <form method="get" class="w3-row">
-                        <div class="w3-col s6">
-                            <label>Sort by:</label>
-                            <select name="sort_by" class="w3-select" onchange="this.form.submit()">
-                                <option value="student_id" <?php if($sort_by == 'student_id') echo 'selected'; ?>>Student ID</option>
-                                <option value="purpose" <?php if($sort_by == 'purpose') echo 'selected'; ?>>Purpose</option>
-                                <option value="laboratory" <?php if($sort_by == 'laboratory') echo 'selected'; ?>>Laboratory</option>
-                            </select>
-                        </div>
-                        <div class="w3-col s6">
-                            <label>Order:</label>
-                            <select name="sort_order" class="w3-select" onchange="this.form.submit()">
-                                <option value="ASC" <?php if($sort_order == 'ASC') echo 'selected'; ?>>Ascending</option>
-                                <option value="DESC" <?php if($sort_order == 'DESC') echo 'selected'; ?>>Descending</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-
                 <!-- Export Buttons -->
                 <div class="w3-container w3-margin-bottom">
-                    <a href="feedbackExport.php?type=csv&sort_by=<?php echo $sort_by; ?>&sort_order=<?php echo $sort_order; ?>" 
-                       class="w3-button w3-blue w3-margin-right">Export CSV</a>
-                    <a href="feedbackExport.php?type=pdf&sort_by=<?php echo $sort_by; ?>&sort_order=<?php echo $sort_order; ?>" 
-                       class="w3-button w3-blue">Export PDF</a>
+                    <a href="feedbackExport.php?type=csv" class="w3-button w3-blue w3-margin-right">Export CSV</a>
+                    <a href="feedbackExport.php?type=pdf" class="w3-button w3-blue">Export PDF</a>
                 </div>
 
                 <!-- Feedback Table -->
