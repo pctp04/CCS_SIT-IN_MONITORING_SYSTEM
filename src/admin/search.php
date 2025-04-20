@@ -133,7 +133,15 @@ if ($id && $conn) {
                         <option value="C# Programming">C# Programming</option>
                         <option value="JAVA Programming">JAVA Programming</option>
                         <option value=".NET Programming">.NET Programming</option>
-                        <option value="PHP Programming">PHP Programming</option>
+                        <option value="Database">Database</option>
+                        <option value="Digital Logic and Design">Digital Logic and Design</option>
+                        <option value="Embedded System and IoT">Embedded System and IoT</option>
+                        <option value="System Integration and Architecture">System Integration and Architecture</option>
+                        <option value="Computer Application">Computer Application</option>
+                        <option value="Project Management">Project Management</option>
+                        <option value="IT Trends">IT Trends</option>
+                        <option value="Technopreneurship">Technopreneurship</option>
+                        <option value="Capstone">Capstone</option>
                     </select>
                 </div>
 
@@ -141,10 +149,13 @@ if ($id && $conn) {
                     <label for="lab">Laboratory</label>
                     <select id="lab" name="lab" required>
                         <option value="">Select Lab</option>
-                        <option value="544">544</option>
-                        <option value="530">530</option>
+                        <option value="517">517</option>
                         <option value="524">524</option>
+                        <option value="526">526</option>
                         <option value="528">528</option>
+                        <option value="530">530</option>
+                        <option value="542">542</option>
+                        <option value="544">544</option>
                     </select>
                 </div>
 
