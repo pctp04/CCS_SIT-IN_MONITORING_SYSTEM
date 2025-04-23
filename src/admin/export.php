@@ -81,7 +81,7 @@ if ($conn) {
         exit();
         
     } elseif ($export_type === 'pdf') {
-        require_once('../../tcpdf/tcpdf.php');
+        require_once __DIR__ . '/../../vendor/tecnickcom/tcpdf/tcpdf.php';
         
         // Create new PDF document
         $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -145,4 +145,4 @@ if ($conn) {
 // If no valid export type or error occurred, redirect back to reports page
 header("Location: reports.php");
 exit();
-?> 
+?>
