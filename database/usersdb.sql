@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 20, 2025 at 07:09 PM
+-- Generation Time: Apr 23, 2025 at 07:01 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -131,7 +131,24 @@ INSERT INTO `sit-in` (`ID`, `STUDENT_ID`, `LABORATORY`, `PURPOSE`, `SESSION_DATE
 (14, 4000, '530', 'PHP Programming', '2025-03-23', '19:26:25', '18:09:43', 'Inactive'),
 (15, 2000, '528', 'IT Trends', '2025-04-20', '18:09:18', '18:09:41', 'Inactive'),
 (16, 2000, '524', 'Database', '2025-04-20', '18:09:33', '18:09:41', 'Inactive'),
-(17, 2000, '530', 'C# Programming', '2025-04-22', NULL, '18:27:47', 'Inactive');
+(17, 2000, '530', 'C# Programming', '2025-04-22', NULL, '18:27:47', 'Inactive'),
+(18, 3000, '544', 'Capstone', '2025-04-23', '05:26:15', '05:26:17', 'Inactive'),
+(19, 4000, '544', 'Embedded System and IoT', '2025-04-23', '05:26:23', '05:26:25', 'Inactive'),
+(20, 2000, '524', 'Capstone', '2025-04-23', '05:26:32', '05:26:33', 'Inactive'),
+(21, 2000, '544', 'Database', '2025-04-23', '05:26:38', '05:26:40', 'Inactive'),
+(22, 2000, '544', 'System Integration and Architecture', '2025-04-23', '05:26:45', '05:26:47', 'Inactive'),
+(23, 2000, '542', 'Capstone', '2025-04-23', '05:26:53', '05:26:55', 'Inactive'),
+(24, 3000, '542', 'Capstone', '2025-04-23', '05:27:00', '05:27:01', 'Inactive'),
+(25, 3000, '544', 'Embedded System and IoT', '2025-04-23', '05:27:06', '05:27:10', 'Inactive'),
+(26, 3000, '544', 'Database', '2025-04-23', '05:27:16', '05:27:18', 'Inactive'),
+(27, 3000, '524', 'Capstone', '2025-04-23', '05:27:23', '05:27:25', 'Inactive'),
+(28, 3000, '544', 'C Programming', '2025-04-23', '05:27:31', '05:27:33', 'Inactive'),
+(29, 3000, '530', 'Digital Logic and Design', '2025-04-23', '05:27:40', '05:27:41', 'Inactive'),
+(30, 5000, '530', 'Project Management', '2025-04-23', '05:27:46', '05:27:47', 'Inactive'),
+(31, 5000, '530', 'JAVA Programming', '2025-04-23', '06:04:05', '06:04:07', 'Inactive'),
+(32, 5000, '528', 'IT Trends', '2025-04-23', '06:04:14', '06:04:15', 'Inactive'),
+(33, 2000, '544', 'IT Trends', '2025-04-23', '06:04:21', '06:04:23', 'Inactive'),
+(34, 5000, '542', 'IT Trends', '2025-04-23', '06:04:28', '06:04:29', 'Inactive');
 
 -- --------------------------------------------------------
 
@@ -158,10 +175,10 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`IDNO`, `LASTNAME`, `FIRSTNAME`, `MIDDLENAME`, `COURSE`, `YEAR`, `EMAIL`, `PASSWORD`, `SESSION`, `ROLE`) VALUES
 (1000, 'Pat', 'Paul', 'T', 'BSIT', 4, 'pat@email.com', 'admin', 30, 'admin'),
-(2000, 'DESO', 'LATOR', NULL, 'BSIT', 2, 'lator@email.com', '2000', 10, 'Student'),
-(3000, 'eul', 'scepter', 's', 'BSIT', 1, 'eul@email.com', '3000', 23, 'Student'),
-(4000, 'staff', 'force', 'g', 'NAME', 2, 'force@email.com', '4000', 11, 'Student'),
-(5000, 'cape', 'glimmer', 'a', 'BSIT', 1, 'glimmer@email.com', '5000', 29, 'Student');
+(2000, 'DESO', 'LATOR', NULL, 'BSIT', 2, 'lator@email.com', '2000', 5, 'Student'),
+(3000, 'eul', 'scepter', 's', 'BSIT', 1, 'eul@email.com', '3000', 16, 'Student'),
+(4000, 'staff', 'force', 'g', 'NAME', 2, 'force@email.com', '4000', 10, 'Student'),
+(5000, 'cape', 'glimmer', 'a', 'BSIT', 1, 'glimmer@email.com', '5000', 25, 'Student');
 
 --
 -- Indexes for dumped tables
@@ -227,7 +244,7 @@ ALTER TABLE `reservation`
 -- AUTO_INCREMENT for table `sit-in`
 --
 ALTER TABLE `sit-in`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- Constraints for dumped tables
