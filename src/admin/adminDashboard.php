@@ -16,6 +16,7 @@
     $purpose_labels = array();
     $purpose_data = array();
     $announcements = null;
+    $top_students = array();
 
     if($conn) {
         // Get total registered students
@@ -37,6 +38,19 @@
         $result = $conn->query($query);
         if($result) {
             $stats['total_sitin'] = $result->fetch_assoc()['total'];
+        }
+
+        // Get top 3 students by points
+        $query = "SELECT IDNO, FIRSTNAME, LASTNAME, COURSE, YEAR, POINTS 
+                 FROM user 
+                 WHERE ROLE = 'student' 
+                 ORDER BY POINTS DESC 
+                 LIMIT 3";
+        $result = $conn->query($query);
+        if($result) {
+            while($row = $result->fetch_assoc()) {
+                $top_students[] = $row;
+            }
         }
 
         // Get purpose statistics for pie chart
@@ -138,6 +152,38 @@
             max-height: 400px;
             overflow-y: auto;
         }
+        .leaderboard {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .leaderboard h3 {
+            color: #2196F3;
+            margin-bottom: 15px;
+        }
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .leaderboard-rank {
+            font-weight: bold;
+            color: #2196F3;
+            margin-right: 10px;
+        }
+        .leaderboard-info {
+            flex-grow: 1;
+        }
+        .leaderboard-points {
+            font-weight: bold;
+            color: #4CAF50;
+        }
     </style>
 </head>
 <body>
@@ -158,6 +204,26 @@
                 
                 <div class="stat-box w3-card w3-padding">
                     <h3>Total Sit-in: <?php echo $stats['total_sitin']; ?></h3>
+                </div>
+
+                <!-- Leaderboard -->
+                <div class="leaderboard w3-card w3-padding">
+                    <h3 class="w3-center">Top 3 Students</h3>
+                    <?php if (!empty($top_students)): ?>
+                        <?php foreach ($top_students as $index => $student): ?>
+                            <div class="leaderboard-item">
+                                <span class="leaderboard-rank">#<?php echo $index + 1; ?></span>
+                                <div class="leaderboard-info">
+                                    <?php echo htmlspecialchars($student['FIRSTNAME'] . ' ' . $student['LASTNAME']); ?>
+                                    <br>
+                                    <small><?php echo htmlspecialchars($student['COURSE'] . ' - Year ' . $student['YEAR']); ?></small>
+                                </div>
+                                <span class="leaderboard-points"><?php echo htmlspecialchars($student['POINTS'] ?? 0); ?> pts</span>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <p class="w3-center">No students found.</p>
+                    <?php endif; ?>
                 </div>
 
                 <div class="chart-container">

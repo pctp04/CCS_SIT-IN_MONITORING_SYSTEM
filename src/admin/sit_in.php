@@ -39,6 +39,67 @@ if(isset($_GET['logout']) && isset($_GET['id'])) {
     }
 }
 
+// Handle reward action
+if(isset($_GET['reward']) && isset($_GET['id'])) {
+    $student_id = $_GET['id'];
+    if($conn) {
+        // Start transaction
+        $conn->begin_transaction();
+        try {
+            $current_time = date('H:i:s');
+            
+            // Get current points
+            $points_query = "SELECT POINTS FROM user WHERE IDNO = ?";
+            $stmt = $conn->prepare($points_query);
+            $stmt->bind_param("i", $student_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $current_points = $result->fetch_assoc()['POINTS'] ?? 0;
+            $stmt->close();
+
+            // Calculate new points and check for session bonus
+            $new_points = $current_points + 1;
+            $session_bonus = ($new_points % 3 == 0) ? 1 : 0;
+
+            // Update points and potentially add session bonus
+            $update_points_query = "UPDATE user SET POINTS = ?, SESSION = SESSION + ? WHERE IDNO = ?";
+            $stmt = $conn->prepare($update_points_query);
+            $stmt->bind_param("iii", $new_points, $session_bonus, $student_id);
+            $stmt->execute();
+            $stmt->close();
+
+            // Update sit-in status to Inactive and set logout time
+            $update_sitin_query = "UPDATE `sit-in` SET STATUS = 'Inactive', LOGOUT_TIME = ? WHERE STUDENT_ID = ? AND STATUS = 'Active'";
+            $stmt = $conn->prepare($update_sitin_query);
+            $stmt->bind_param("si", $current_time, $student_id);
+            $stmt->execute();
+            $stmt->close();
+
+            // Decrease session count (since they're logging out)
+            $update_query = "UPDATE user SET SESSION = SESSION - 1 WHERE IDNO = ? AND SESSION > 0";
+            $stmt = $conn->prepare($update_query);
+            $stmt->bind_param("i", $student_id);
+            $stmt->execute();
+            $stmt->close();
+
+            $conn->commit();
+            
+            // Set success message
+            $message = "Student rewarded with 1 point";
+            if ($session_bonus > 0) {
+                $message .= " and earned 1 additional session!";
+            }
+            $_SESSION['reward_message'] = $message;
+            
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
+        } catch (Exception $e) {
+            $conn->rollback();
+            $_SESSION['reward_error'] = "Error processing reward: " . $e->getMessage();
+        }
+    }
+}
+
 $entries_per_page = isset($_GET['entries']) ? (int)$_GET['entries'] : 10;
 
 // Get total number of active sit-ins for pagination
@@ -112,6 +173,22 @@ if($conn) {
         <div class="w3-container">
             <h1 class="w3-center">Current Sit in</h1>
             
+            <?php if (isset($_SESSION['reward_message'])): ?>
+                <div class="w3-panel w3-green w3-display-container">
+                    <span onclick="this.parentElement.style.display='none'" class="w3-button w3-green w3-large w3-display-topright">&times;</span>
+                    <p><?php echo $_SESSION['reward_message']; ?></p>
+                </div>
+                <?php unset($_SESSION['reward_message']); ?>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['reward_error'])): ?>
+                <div class="w3-panel w3-red w3-display-container">
+                    <span onclick="this.parentElement.style.display='none'" class="w3-button w3-red w3-large w3-display-topright">&times;</span>
+                    <p><?php echo $_SESSION['reward_error']; ?></p>
+                </div>
+                <?php unset($_SESSION['reward_error']); ?>
+            <?php endif; ?>
+            
             <!-- Entries per page dropdown -->
             <div class="w3-row">
                 <div class="w3-col s6">
@@ -162,6 +239,7 @@ if($conn) {
                             echo "<td>" . 'Active' . "</td>";
                             echo "<td>";
                             if($row['SIT_STATUS'] === 'Active') {
+                                echo "<a href='?reward=1&id=" . $row['IDNO'] . "' class='w3-button w3-small w3-green w3-margin-right' onclick=\"return confirm('Award point and logout this student?')\">Reward</a>";
                                 echo "<a href='?logout=1&id=" . $row['IDNO'] . "' class='w3-button w3-small w3-red' onclick=\"return confirm('Are you sure you want to logout this student?')\">Logout</a>";
                             }
                             echo "</td>";

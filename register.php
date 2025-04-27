@@ -96,6 +96,7 @@
             $session = 15;
         }
         $role = "Student";
+        $points = 0; // Initialize points to 0
 
         // check if IDNO exists
         $check_query = "SELECT * FROM user WHERE IDNO = ?";
@@ -107,11 +108,11 @@
         if ($result->num_rows > 0) {
             echo "<script type='text/javascript'>alert('IDNO already exists!');</script>";
         } else {
-            // insert new record
-            $sql = "INSERT INTO user (IDNO, LASTNAME, FIRSTNAME, MIDDLENAME, COURSE, YEAR, EMAIL, PASSWORD, SESSION, ROLE)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            // insert new record with points
+            $sql = "INSERT INTO user (IDNO, LASTNAME, FIRSTNAME, MIDDLENAME, COURSE, YEAR, EMAIL, PASSWORD, SESSION, ROLE, POINTS)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("issssissss", $idno, $lastname, $firstname, $middlename, $course, $year, $email, $password, $session, $role);
+            $stmt->bind_param("issssissssi", $idno, $lastname, $firstname, $middlename, $course, $year, $email, $password, $session, $role, $points);
 
             if ($stmt->execute()) {
                 $msg = "Registered successfully!";

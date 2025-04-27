@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 23, 2025 at 07:01 AM
+-- Generation Time: Apr 27, 2025 at 07:06 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -166,19 +166,20 @@ CREATE TABLE `user` (
   `EMAIL` varchar(255) NOT NULL,
   `PASSWORD` varchar(255) NOT NULL,
   `SESSION` int(2) NOT NULL,
-  `ROLE` varchar(7) NOT NULL
+  `ROLE` varchar(7) NOT NULL,
+  `POINTS` int(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`IDNO`, `LASTNAME`, `FIRSTNAME`, `MIDDLENAME`, `COURSE`, `YEAR`, `EMAIL`, `PASSWORD`, `SESSION`, `ROLE`) VALUES
-(1000, 'Pat', 'Paul', 'T', 'BSIT', 4, 'pat@email.com', 'admin', 30, 'admin'),
-(2000, 'DESO', 'LATOR', NULL, 'BSIT', 2, 'lator@email.com', '2000', 5, 'Student'),
-(3000, 'eul', 'scepter', 's', 'BSIT', 1, 'eul@email.com', '3000', 16, 'Student'),
-(4000, 'staff', 'force', 'g', 'NAME', 2, 'force@email.com', '4000', 10, 'Student'),
-(5000, 'cape', 'glimmer', 'a', 'BSIT', 1, 'glimmer@email.com', '5000', 25, 'Student');
+INSERT INTO `user` (`IDNO`, `LASTNAME`, `FIRSTNAME`, `MIDDLENAME`, `COURSE`, `YEAR`, `EMAIL`, `PASSWORD`, `SESSION`, `ROLE`, `POINTS`) VALUES
+(1000, 'Pat', 'Paul', 'T', 'BSIT', 4, 'pat@email.com', 'admin', 30, 'admin', NULL),
+(2000, 'DESO', 'LATOR', NULL, 'BSIT', 2, 'lator@email.com', '2000', 5, 'Student', NULL),
+(3000, 'eul', 'scepter', 's', 'BSIT', 1, 'eul@email.com', '3000', 16, 'Student', NULL),
+(4000, 'staff', 'force', 'g', 'NAME', 2, 'force@email.com', '4000', 10, 'Student', NULL),
+(5000, 'cape', 'glimmer', 'a', 'BSIT', 1, 'glimmer@email.com', '5000', 25, 'Student', NULL);
 
 --
 -- Indexes for dumped tables

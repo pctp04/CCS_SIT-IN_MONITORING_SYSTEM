@@ -141,6 +141,7 @@
                 <p><b>Year Level</b>: <?php echo htmlspecialchars($user['YEAR']); ?></p>
                 <p><b>Email</b>: <?php echo htmlspecialchars($user['EMAIL']); ?></p>
                 <p><b>Session</b>: <?php echo htmlspecialchars($user['SESSION']); ?></p>
+                <p><b>Points</b>: <?php echo htmlspecialchars($user['POINTS'] ?? 0); ?></p>
             </div>
             <footer>
                 <form action="studentDashboard.php" method="post">
