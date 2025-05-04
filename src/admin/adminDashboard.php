@@ -29,12 +29,16 @@
         // Get current active sit-ins
         $query = "SELECT COUNT(*) as total FROM `sit-in` WHERE STATUS = 'Active'";
         $result = mysqli_query($conn, $query);
-        $activeSitIns = mysqli_fetch_assoc($result)['total'];
+        if($result) {
+            $stats['current_sitin'] = mysqli_fetch_assoc($result)['total'];
+        }
 
         // Get total sit-ins
         $query = "SELECT COUNT(*) as total FROM `sit-in`";
         $result = mysqli_query($conn, $query);
-        $totalSitIns = mysqli_fetch_assoc($result)['total'];
+        if($result) {
+            $stats['total_sitin'] = mysqli_fetch_assoc($result)['total'];
+        }
 
         // Get top 3 students by points
         $query = "SELECT IDNO, FIRSTNAME, LASTNAME, COURSE, YEAR, POINTS 
@@ -52,9 +56,11 @@
         // Get purpose statistics for pie chart
         $query = "SELECT PURPOSE, COUNT(*) as count FROM `sit-in` GROUP BY PURPOSE";
         $result = mysqli_query($conn, $query);
-        $purposeStats = [];
-        while ($row = mysqli_fetch_assoc($result)) {
-            $purposeStats[$row['PURPOSE']] = $row['count'];
+        if($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $purpose_labels[] = $row['PURPOSE'];
+                $purpose_data[] = $row['count'];
+            }
         }
 
         // Handle new announcement submission
