@@ -7,6 +7,37 @@ if (!isset($_SESSION['user_id'])) {
 include(__DIR__ . '/../../database.php');
 
 $message = '';
+
+// Check and update computer status for expired reservations
+if ($conn) {
+    $current_datetime = date('Y-m-d H:i:s');
+    
+    // Get all approved reservations that have passed their start time
+    $expired_query = "SELECT r.*, cs.ID as computer_status_id 
+                      FROM reservation r 
+                      JOIN computer_status cs ON r.LABORATORY = cs.LABORATORY AND r.PC_NUMBER = cs.COMPUTER_NUMBER
+                      WHERE r.STATUS = 'Approved' 
+                      AND CONCAT(r.RESERVATION_DATE, ' ', r.START_TIME) <= ?";
+    
+    $stmt = $conn->prepare($expired_query);
+    $stmt->bind_param("s", $current_datetime);
+    $stmt->execute();
+    $expired_reservations = $stmt->get_result();
+    
+    // Update computer status for each expired reservation
+    while ($reservation = $expired_reservations->fetch_assoc()) {
+        $update_status_query = "UPDATE computer_status 
+                              SET STATUS = 'In Use', 
+                                  LAST_UPDATED = NOW() 
+                              WHERE ID = ?";
+        $update_stmt = $conn->prepare($update_status_query);
+        $update_stmt->bind_param("i", $reservation['computer_status_id']);
+        $update_stmt->execute();
+        $update_stmt->close();
+    }
+    $stmt->close();
+}
+
 $selected_lab = isset($_GET['lab']) ? $_GET['lab'] : '524';
 
 // Handle status update

@@ -9,6 +9,36 @@ include(__DIR__ . '/../../database.php');
 
 $message = '';
 
+// Check and update computer status for expired reservations
+if ($conn) {
+    $current_datetime = date('Y-m-d H:i:s');
+    
+    // Get all approved reservations that have passed their start time
+    $expired_query = "SELECT r.*, cs.ID as computer_status_id 
+                      FROM reservation r 
+                      JOIN computer_status cs ON r.LABORATORY = cs.LABORATORY AND r.PC_NUMBER = cs.COMPUTER_NUMBER
+                      WHERE r.STATUS = 'Approved' 
+                      AND CONCAT(r.RESERVATION_DATE, ' ', r.START_TIME) <= ?";
+    
+    $stmt = $conn->prepare($expired_query);
+    $stmt->bind_param("s", $current_datetime);
+    $stmt->execute();
+    $expired_reservations = $stmt->get_result();
+    
+    // Update computer status for each expired reservation
+    while ($reservation = $expired_reservations->fetch_assoc()) {
+        $update_status_query = "UPDATE computer_status 
+                              SET STATUS = 'In Use', 
+                                  LAST_UPDATED = NOW() 
+                              WHERE ID = ?";
+        $update_stmt = $conn->prepare($update_status_query);
+        $update_stmt->bind_param("i", $reservation['computer_status_id']);
+        $update_stmt->execute();
+        $update_stmt->close();
+    }
+    $stmt->close();
+}
+
 // Handle reservation status update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     $reservation_id = $_POST['reservation_id'];
@@ -160,8 +190,7 @@ if ($conn) {
                                         <?php if (!isset($_GET['status']) || $_GET['status'] === $reservation['STATUS']): ?>
                                             <tr>
                                                 <td><?php echo date('M d, Y', strtotime($reservation['RESERVATION_DATE'])); ?></td>
-                                                <td><?php echo date('h:i A', strtotime($reservation['START_TIME'])) . ' - ' . 
-                                                       date('h:i A', strtotime($reservation['END_TIME'])); ?></td>
+                                                <td><?php echo date('h:i A', strtotime($reservation['START_TIME'])); ?></td>
                                                 <td><?php echo htmlspecialchars($reservation['FIRSTNAME'] . ' ' . $reservation['LASTNAME']); ?></td>
                                                 <td><?php echo htmlspecialchars($reservation['COURSE'] . ' ' . $reservation['YEAR']); ?></td>
                                                 <td><?php echo htmlspecialchars($reservation['LABORATORY']); ?></td>

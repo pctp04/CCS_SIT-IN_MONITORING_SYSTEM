@@ -98,17 +98,20 @@ $resources = $conn->query($query);
                                         <a href="../../uploads/<?php echo $resource['FILE_PATH']; ?>" 
                                            class="w3-button w3-blue download-btn" 
                                            target="_blank">Download</a>
-                                        <a href="<?php 
+                                        <?php
                                             $file_url = '../../uploads/' . $resource['FILE_PATH'];
                                             $file_type = strtolower($resource['FILE_TYPE']);
-                                            if ($file_type === 'pdf' || $file_type === 'txt') {
-                                                echo $file_url;
+                                            $view_url = $file_url;
+                                            if (in_array($file_type, ['pdf', 'txt'])) {
+                                                // Direct view
+                                                $view_url = $file_url;
                                             } else if (in_array($file_type, ['doc', 'docx', 'ppt', 'pptx'])) {
-                                                echo 'https://docs.google.com/gview?url=' . urlencode((isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']) . '/' . $file_url) . '&embedded=true';
-                                            } else {
-                                                echo $file_url;
+                                                // Use Google Docs Viewer
+                                                $absolute_url = (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']) . '/' . $file_url;
+                                                $view_url = 'https://docs.google.com/gview?url=' . urlencode($absolute_url) . '&embedded=true';
                                             }
-                                        ?>" 
+                                        ?>
+                                        <a href="<?php echo $view_url; ?>" 
                                            class="w3-button w3-green download-btn" 
                                            target="_blank">View</a>
                                     </div>
