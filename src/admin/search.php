@@ -9,6 +9,7 @@ $purpose = '';
 $lab = '';
 $remaining_sessions = '';
 $message = '';
+$available_pcs = [];
 
 // Handle sit-in form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sit_in'])) {
@@ -16,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sit_in'])) {
         $student_id = $_POST['student_id'];
         $purpose = $_POST['purpose'];
         $lab = $_POST['lab'];
+        $pc_number = $_POST['pc_number'];
         $current_date = date('Y-m-d');
         $current_time = date('H:i:s');
         
@@ -26,6 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sit_in'])) {
             $insert_query = "INSERT INTO `sit-in` (STUDENT_ID, PURPOSE, LABORATORY, STATUS, SESSION_DATE, LOGIN_TIME) VALUES (?, ?, ?, 'Active', ?, ?)";
             $stmt = $conn->prepare($insert_query);
             $stmt->bind_param("issss", $student_id, $purpose, $lab, $current_date, $current_time);
+            $stmt->execute();
+            $stmt->close();
+
+            // Update computer status to 'In Use'
+            $update_pc_query = "UPDATE computer_status SET STATUS = 'In Use', LAST_UPDATED = NOW() WHERE LABORATORY = ? AND COMPUTER_NUMBER = ?";
+            $stmt = $conn->prepare($update_pc_query);
+            $stmt->bind_param("si", $lab, $pc_number);
             $stmt->execute();
             $stmt->close();
 
@@ -51,6 +60,23 @@ if ($id && $conn) {
         }
         $stmt->close();
     }
+}
+
+// Function to get available PCs for a lab
+function getAvailablePCs($conn, $lab) {
+    $pcs = [];
+    if ($conn) {
+        $query = "SELECT COMPUTER_NUMBER FROM computer_status WHERE LABORATORY = ? AND STATUS = 'Available' ORDER BY COMPUTER_NUMBER";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("s", $lab);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $pcs[] = $row['COMPUTER_NUMBER'];
+        }
+        $stmt->close();
+    }
+    return $pcs;
 }
 ?>
 
@@ -95,6 +121,9 @@ if ($id && $conn) {
             cursor: pointer;
             margin-bottom: 10px;
             display: inline-block;
+        }
+        #pcSelect {
+            display: none;
         }
     </style>
 </head>
@@ -147,7 +176,7 @@ if ($id && $conn) {
 
                 <div class="simple-form-group">
                     <label for="lab">Laboratory</label>
-                    <select id="lab" name="lab" required>
+                    <select id="lab" name="lab" required onchange="updateAvailablePCs(this.value)">
                         <option value="">Select Lab</option>
                         <option value="517">517</option>
                         <option value="524">524</option>
@@ -156,6 +185,13 @@ if ($id && $conn) {
                         <option value="530">530</option>
                         <option value="542">542</option>
                         <option value="544">544</option>
+                    </select>
+                </div>
+
+                <div class="simple-form-group" id="pcSelect">
+                    <label for="pc_number">Select PC</label>
+                    <select id="pc_number" name="pc_number" required>
+                        <option value="">Select PC</option>
                     </select>
                 </div>
 
@@ -171,5 +207,36 @@ if ($id && $conn) {
             </form>
         </div>
     </div>
+
+    <script>
+        function updateAvailablePCs(lab) {
+            if (!lab) {
+                document.getElementById('pcSelect').style.display = 'none';
+                return;
+            }
+
+            // Show loading state
+            const pcSelect = document.getElementById('pc_number');
+            pcSelect.innerHTML = '<option value="">Loading...</option>';
+            document.getElementById('pcSelect').style.display = 'block';
+
+            // Fetch available PCs
+            fetch(`get_available_pcs.php?lab=${lab}`)
+                .then(response => response.json())
+                .then(pcs => {
+                    pcSelect.innerHTML = '<option value="">Select PC</option>';
+                    pcs.forEach(pc => {
+                        const option = document.createElement('option');
+                        option.value = pc;
+                        option.textContent = `PC${pc}`;
+                        pcSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    pcSelect.innerHTML = '<option value="">Error loading PCs</option>';
+                });
+        }
+    </script>
 </body>
 </html>

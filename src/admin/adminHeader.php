@@ -2,7 +2,7 @@
     include(__DIR__ . '/../../database.php');
     mysqli_close($conn);
 
-    if(isset($_POST["home"])){
+    if(isset($_POST["dashboard"])){
         header("Location: adminDashboard.php");
         exit();
     }elseif(isset($_POST["students"])){
@@ -22,6 +22,9 @@
         exit();
     }elseif(isset($_POST["reservation"])){
         header("Location: manageReservations.php");
+        exit();
+    }elseif(isset($_POST["computers"])){
+        header("Location: manageComputers.php");
         exit();
     }elseif(isset($_POST["logout"])){
         session_start();
@@ -46,6 +49,9 @@
             padding: 10px 20px;
             background: linear-gradient(to right, #2196F3, #0D47A1);
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
         .header-logo {
             height: 40px;
@@ -63,6 +69,7 @@
             gap: 10px;
             margin-left: auto;
             align-items: center;
+            flex-wrap: wrap;
         }
         .nav-button {
             background: transparent;
@@ -70,12 +77,20 @@
             border: none;
             padding: 8px 15px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
             border-radius: 4px;
             font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         .nav-button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+        .nav-button.active {
             background-color: rgba(255, 255, 255, 0.1);
+            font-weight: bold;
         }
         .logout-button {
             background-color: #ff4444;
@@ -83,60 +98,39 @@
             border: none;
             padding: 8px 20px;
             border-radius: 4px;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
+            cursor: pointer;
         }
         .logout-button:hover {
             background-color: #cc0000;
+            transform: translateY(-1px);
         }
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .search-form {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .search-form input {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .search-form button {
-            background-color: #2196F3;
+        .dashboard-button {
+            background-color: #4CAF50;
             color: white;
             border: none;
             padding: 8px 20px;
             border-radius: 4px;
+            transition: all 0.3s;
             cursor: pointer;
+            margin-right: 10px;
         }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
+        .dashboard-button:hover {
+            background-color: #45a049;
+            transform: translateY(-1px);
         }
-        .close:hover {
-            color: #000;
+        @media (max-width: 1200px) {
+            .nav-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .header-container {
+                flex-direction: column;
+                padding: 10px;
+            }
+            .header-title {
+                margin-bottom: 10px;
+            }
         }
     </style>
     <title>Admin Dashboard</title>
@@ -147,78 +141,60 @@
         <h3 class="header-title">CCS Sit-in Monitoring System</h3>
         <div class="nav-buttons">
             <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" style="display: flex; gap: 10px; align-items: center;">
-                <button type="submit" name="home" class="nav-button">Home</button>
+                <button type="submit" name="dashboard" class="dashboard-button">Dashboard</button>
                 <button type="button" id="searchButton" class="nav-button">Search</button>
                 <button type="submit" name="students" class="nav-button">Students</button>
                 <button type="submit" name="sit-in" class="nav-button">Current Sit-in</button>
-                <button type="submit" name="viewSit-in" class="nav-button">View Sit-in Records</button>
+                <button type="submit" name="viewSit-in" class="nav-button">View Records</button>
                 <button type="submit" name="reports" class="nav-button">Sit-in Reports</button>
                 <button type="submit" name="feedbackReports" class="nav-button">Feedback Reports</button>
                 <button type="submit" name="reservation" class="nav-button">Reservation</button>
+                <button type="submit" name="computers" class="nav-button">Computer Management</button>
+                <button type="submit" name="resources" class="nav-button">Resources</button>
                 <button type="submit" name="logout" class="logout-button">Logout</button>
             </form>
         </div>
     </div>
 
     <!-- Search Modal -->
-    <div id="searchModal" class="modal">
-        <div class="modal-content">
-            <span class="close" data-modal="searchModal">&times;</span>
-            <h2>Search Student</h2>
-            <div class="search-form">
-                <input type="text" id="studentId" placeholder="Enter Student ID">
-                <button type="button" id="submitSearch">Search</button>
+    <div id="searchModal" class="w3-modal">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:400px">
+            <header class="w3-container w3-blue">
+                <span class="w3-button w3-display-topright" onclick="document.getElementById('searchModal').style.display='none'">&times;</span>
+                <h2>Search Student</h2>
+            </header>
+            <div class="w3-container w3-padding">
+                <input type="text" id="studentId" class="w3-input w3-border" placeholder="Enter Student ID">
+                <button type="button" id="submitSearch" class="w3-button w3-blue w3-margin-top">Search</button>
             </div>
         </div>
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchModal = document.getElementById('searchModal');
-        const searchBtn = document.getElementById('searchButton');
-        const closeBtns = document.getElementsByClassName('close');
-        const submitSearch = document.getElementById('submitSearch');
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchModal = document.getElementById('searchModal');
+            const searchBtn = document.getElementById('searchButton');
+            const submitSearch = document.getElementById('submitSearch');
 
-        // Ensure modal is hidden on page load
-        searchModal.style.display = "none";
+            searchBtn.onclick = function() {
+                searchModal.style.display = "block";
+            }
 
-        // Open the search modal only when clicking the search button
-        searchBtn.onclick = function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            searchModal.style.display = "block";
-        };
+            window.onclick = function(event) {
+                if (event.target == searchModal) {
+                    searchModal.style.display = "none";
+                }
+            }
 
-        // Close button handlers
-        Array.from(closeBtns).forEach(btn => {
-            btn.onclick = function() {
-                const modalToClose = document.getElementById(this.dataset.modal);
-                modalToClose.style.display = "none";
+            submitSearch.onclick = function() {
+                const studentId = document.getElementById('studentId').value;
+                if (studentId.trim() === '') {
+                    alert('Please enter a student ID');
+                    return;
+                }
+                window.location.href = 'search.php?id=' + studentId;
             }
         });
-
-        // Click outside modal to close
-        window.onclick = function(event) {
-            if (event.target == searchModal) {
-                searchModal.style.display = "none";
-            }
-        }
-
-        // Search submit handler
-        submitSearch.onclick = function() {
-            const studentId = document.getElementById('studentId').value;
-            if (studentId.trim() === '') {
-                alert('Please enter a student ID');
-                return;
-            }
-
-            // Redirect to search.php with student ID
-            const params = new URLSearchParams({
-                id: studentId
-            });
-            window.location.href = 'search.php?' + params.toString();
-        }
-    });
     </script>
 </body>
 </html>

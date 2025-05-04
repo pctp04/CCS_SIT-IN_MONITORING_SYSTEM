@@ -10,46 +10,64 @@ include(__DIR__ . '/../../database.php');
 $student_id = $_SESSION['user_id'];
 $message = '';
 
+// Get student information
+$student_info = null;
+if ($conn) {
+    $query = "SELECT IDNO, FIRSTNAME, LASTNAME, MIDDLENAME, SESSION FROM user WHERE IDNO = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $student_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $student_info = $result->fetch_assoc();
+    $stmt->close();
+}
+
 // Handle reservation submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_reservation'])) {
     $laboratory = $_POST['laboratory'];
     $purpose = $_POST['purpose'];
     $reservation_date = $_POST['reservation_date'];
-    $start_time = $_POST['start_time'];
-    $end_time = $_POST['end_time'];
+    $time_in = $_POST['time_in'];
+    $pc_number = $_POST['pc_number'];
 
     if ($conn) {
-        // Check for time conflicts
-        $conflict_query = "SELECT * FROM reservation 
-                          WHERE LABORATORY = ? 
-                          AND RESERVATION_DATE = ? 
-                          AND STATUS = 'Approved'
-                          AND (
-                              (START_TIME <= ? AND END_TIME >= ?)
-                              OR (START_TIME <= ? AND END_TIME >= ?)
-                              OR (START_TIME >= ? AND END_TIME <= ?)
-                          )";
-        
-        $stmt = $conn->prepare($conflict_query);
-        $stmt->bind_param("ssssssss", $laboratory, $reservation_date, $start_time, $start_time, $end_time, $end_time, $start_time, $end_time);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        if ($result->num_rows > 0) {
-            $message = "Error: There is already a reservation for this time slot.";
+        // Check if student has available sessions
+        if ($student_info['SESSION'] <= 0) {
+            $message = "Error: You have no remaining sessions available.";
         } else {
-            // Insert new reservation
-            $insert_query = "INSERT INTO reservation (STUDENT_ID, LABORATORY, PURPOSE, RESERVATION_DATE, START_TIME, END_TIME) 
-                            VALUES (?, ?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($insert_query);
-            $stmt->bind_param("isssss", $student_id, $laboratory, $purpose, $reservation_date, $start_time, $end_time);
+            // Check for time conflicts
+            $conflict_query = "SELECT * FROM reservation 
+                              WHERE LABORATORY = ? 
+                              AND RESERVATION_DATE = ? 
+                              AND PC_NUMBER = ?
+                              AND STATUS = 'Approved'";
             
-            if ($stmt->execute()) {
-                $message = "Reservation submitted successfully! Please wait for admin approval.";
-                // Clear form
-                $_POST = array();
+            $stmt = $conn->prepare($conflict_query);
+            $stmt->bind_param("ssi", $laboratory, $reservation_date, $pc_number);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                $message = "Error: This PC is already reserved for the selected date.";
             } else {
-                $message = "Error submitting reservation. Please try again.";
+                // Insert new reservation
+                $insert_query = "INSERT INTO reservation (STUDENT_ID, LABORATORY, PURPOSE, RESERVATION_DATE, START_TIME, PC_NUMBER, STATUS) 
+                                VALUES (?, ?, ?, ?, ?, ?, 'Pending')";
+                $stmt = $conn->prepare($insert_query);
+                $stmt->bind_param("issssi", $student_id, $laboratory, $purpose, $reservation_date, $time_in, $pc_number);
+                
+                if ($stmt->execute()) {
+                    $message = "Reservation submitted successfully! Please wait for admin approval.";
+                    // Refresh student info to update session count
+                    $query = "SELECT SESSION FROM user WHERE IDNO = ?";
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("i", $student_id);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $student_info['SESSION'] = $result->fetch_assoc()['SESSION'];
+                } else {
+                    $message = "Error submitting reservation. Please try again.";
+                }
             }
         }
         $stmt->close();
@@ -79,16 +97,25 @@ if ($conn) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Make Reservation</title>
+    <title>Reservation Module</title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="../static/css/style.css">
     <style>
         .reservation-form {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
         }
+        .student-info {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .student-info p {
+            margin: 5px 0;
+        }
         .reservation-list {
-            margin-top: 20px;
+            margin-top: 30px;
         }
         .status-pending {
             color: #FFA500;
@@ -108,7 +135,7 @@ if ($conn) {
         <div class="w3-container">
             <div class="w3-card w3-white w3-margin">
                 <header class="w3-container w3-blue">
-                    <h2>Make Reservation</h2>
+                    <h2 class="w3-center">Reservation Module</h2>
                 </header>
 
                 <?php if ($message): ?>
@@ -118,21 +145,16 @@ if ($conn) {
                 <?php endif; ?>
 
                 <div class="w3-container w3-padding">
+                    <!-- Student Information -->
+                    <div class="student-info">
+                        <h3>Student Information</h3>
+                        <p><strong>ID Number:</strong> <?php echo htmlspecialchars($student_info['IDNO']); ?></p>
+                        <p><strong>Name:</strong> <?php echo htmlspecialchars($student_info['FIRSTNAME'] . ' ' . $student_info['MIDDLENAME'] . ' ' . $student_info['LASTNAME']); ?></p>
+                        <p><strong>Remaining Sessions:</strong> <?php echo htmlspecialchars($student_info['SESSION']); ?></p>
+                    </div>
+
                     <form method="POST" class="reservation-form">
                         <div class="w3-row-padding">
-                            <div class="w3-half">
-                                <label>Laboratory</label>
-                                <select name="laboratory" class="w3-select w3-border" required>
-                                    <option value="">Select Lab</option>
-                                    <option value="517">517</option>
-                                    <option value="524">524</option>
-                                    <option value="526">526</option>
-                                    <option value="528">528</option>
-                                    <option value="530">530</option>
-                                    <option value="542">542</option>
-                                    <option value="544">544</option>
-                                </select>
-                            </div>
                             <div class="w3-half">
                                 <label>Purpose</label>
                                 <select name="purpose" class="w3-select w3-border" required>
@@ -152,31 +174,46 @@ if ($conn) {
                                     <option value="Capstone">Capstone</option>
                                 </select>
                             </div>
+                            <div class="w3-half">
+                                <label>Laboratory</label>
+                                <select name="laboratory" id="laboratory" class="w3-select w3-border" required onchange="loadAvailablePCs()">
+                                    <option value="">Select Lab</option>
+                                    <option value="517">517</option>
+                                    <option value="524">524</option>
+                                    <option value="526">526</option>
+                                    <option value="528">528</option>
+                                    <option value="530">530</option>
+                                    <option value="542">542</option>
+                                    <option value="544">544</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="w3-row-padding" style="margin-top: 15px;">
+                            <div class="w3-half">
+                                <label>Available PCs</label>
+                                <select name="pc_number" id="pc_number" class="w3-select w3-border" required>
+                                    <option value="">Select PC</option>
+                                </select>
+                            </div>
                             <div class="w3-half">
                                 <label>Date</label>
                                 <input type="date" name="reservation_date" class="w3-input w3-border" required 
                                        min="<?php echo date('Y-m-d'); ?>">
                             </div>
-                            <div class="w3-half">
-                                <label>Start Time</label>
-                                <input type="time" name="start_time" class="w3-input w3-border" required>
-                            </div>
                         </div>
 
                         <div class="w3-row-padding" style="margin-top: 15px;">
                             <div class="w3-half">
-                                <label>End Time</label>
-                                <input type="time" name="end_time" class="w3-input w3-border" required>
+                                <label>Time In</label>
+                                <input type="time" name="time_in" class="w3-input w3-border" required>
                             </div>
                         </div>
 
                         <div class="w3-row-padding" style="margin-top: 20px;">
                             <div class="w3-col">
                                 <button type="submit" name="submit_reservation" class="w3-button w3-blue w3-block">
-                                    Submit Reservation
+                                    Reserve
                                 </button>
                             </div>
                         </div>
@@ -188,7 +225,7 @@ if ($conn) {
                             <thead>
                                 <tr class="w3-blue">
                                     <th>Date</th>
-                                    <th>Time</th>
+                                    <th>Time In</th>
                                     <th>Laboratory</th>
                                     <th>Purpose</th>
                                     <th>Status</th>
@@ -203,8 +240,7 @@ if ($conn) {
                                     <?php foreach ($reservations as $reservation): ?>
                                         <tr>
                                             <td><?php echo date('M d, Y', strtotime($reservation['RESERVATION_DATE'])); ?></td>
-                                            <td><?php echo date('h:i A', strtotime($reservation['START_TIME'])) . ' - ' . 
-                                                   date('h:i A', strtotime($reservation['END_TIME'])); ?></td>
+                                            <td><?php echo date('h:i A', strtotime($reservation['START_TIME'])); ?></td>
                                             <td><?php echo htmlspecialchars($reservation['LABORATORY']); ?></td>
                                             <td><?php echo htmlspecialchars($reservation['PURPOSE']); ?></td>
                                             <td class="status-<?php echo strtolower($reservation['STATUS']); ?>">
@@ -220,5 +256,32 @@ if ($conn) {
             </div>
         </div>
     </div>
+
+    <script>
+    function loadAvailablePCs() {
+        const lab = document.getElementById('laboratory').value;
+        const pcSelect = document.getElementById('pc_number');
+        
+        // Clear current options
+        pcSelect.innerHTML = '<option value="">Select PC</option>';
+        
+        if (!lab) return;
+        
+        // Fetch available PCs
+        fetch(`../admin/get_available_pcs.php?lab=${lab}`)
+            .then(response => response.json())
+            .then(pcs => {
+                pcs.forEach(pc => {
+                    const option = document.createElement('option');
+                    option.value = pc;
+                    option.textContent = `PC${pc}`;
+                    pcSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading PCs:', error);
+            });
+    }
+    </script>
 </body>
 </html> 

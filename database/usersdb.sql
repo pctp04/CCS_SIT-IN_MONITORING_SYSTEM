@@ -21,18 +21,57 @@ SET time_zone = "+00:00";
 -- Database: `usersdb`
 --
 
+
+CREATE DATABASE IF NOT EXISTS `usersdb` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `usersdb`;
+
 -- --------------------------------------------------------
+
+--
+-- Table structure for table `user`
+--
+
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user` (
+  `IDNO` int(11) NOT NULL,
+  `LASTNAME` varchar(48) NOT NULL,
+  `FIRSTNAME` varchar(48) NOT NULL,
+  `MIDDLENAME` varchar(50) DEFAULT NULL,
+  `COURSE` varchar(4) NOT NULL,
+  `YEAR` int(1) NOT NULL,
+  `EMAIL` varchar(255) NOT NULL,
+  `PASSWORD` varchar(255) NOT NULL,
+  `SESSION` int(2) NOT NULL,
+  `ROLE` varchar(7) NOT NULL,
+  `POINTS` int(50) DEFAULT NULL,
+  PRIMARY KEY (`IDNO`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`IDNO`, `LASTNAME`, `FIRSTNAME`, `MIDDLENAME`, `COURSE`, `YEAR`, `EMAIL`, `PASSWORD`, `SESSION`, `ROLE`, `POINTS`) VALUES
+(1000, 'Pat', 'Paul', 'T', 'BSIT', 4, 'pat@email.com', 'admin', 30, 'admin', NULL),
+(2000, 'DESO', 'LATOR', NULL, 'BSIT', 2, 'lator@email.com', '2000', 5, 'Student', NULL),
+(3000, 'eul', 'scepter', 's', 'BSIT', 1, 'eul@email.com', '3000', 16, 'Student', NULL),
+(4000, 'staff', 'force', 'g', 'NAME', 2, 'force@email.com', '4000', 10, 'Student', NULL),
+(5000, 'cape', 'glimmer', 'a', 'BSIT', 1, 'glimmer@email.com', '5000', 25, 'Student', NULL);
 
 --
 -- Table structure for table `announcement`
 --
 
+DROP TABLE IF EXISTS `announcement`;
 CREATE TABLE `announcement` (
-  `ID` int(11) NOT NULL,
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
   `TITLE` varchar(255) NOT NULL,
   `CONTENT` varchar(255) NOT NULL,
   `CREATED_AT` datetime NOT NULL DEFAULT current_timestamp(),
-  `ADMIN_ID` int(11) NOT NULL
+  `ADMIN_ID` int(11) NOT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `FK_ADMIN_ID` (`ADMIN_ID`),
+  CONSTRAINT `FK_ADMIN_ID` FOREIGN KEY (`ADMIN_ID`) REFERENCES `user` (`IDNO`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -47,15 +86,77 @@ INSERT INTO `announcement` (`ID`, `TITLE`, `CONTENT`, `CREATED_AT`, `ADMIN_ID`) 
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `computer_status`
+--
+
+DROP TABLE IF EXISTS `computer_status`;
+CREATE TABLE `computer_status` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `LABORATORY` varchar(50) NOT NULL,
+  `COMPUTER_NUMBER` int(11) NOT NULL,
+  `STATUS` enum('Available','In Use','Maintenance') NOT NULL DEFAULT 'Available',
+  `LAST_UPDATED` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `LAB_COMP_NUM` (`LABORATORY`,`COMPUTER_NUMBER`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `computer_status`
+--
+
+DELIMITER $$
+CREATE PROCEDURE InsertComputerStatuses()
+BEGIN
+    DECLARE lab VARCHAR(50);
+    DECLARE comp_num INT;
+    DECLARE labs VARCHAR(255) DEFAULT '517,524,526,528,530,542,544';
+    DECLARE lab_count INT;
+    DECLARE i INT DEFAULT 1;
+    DECLARE j INT DEFAULT 1;
+    
+    -- Loop through each laboratory
+    WHILE i <= 7 DO
+        SET lab = SUBSTRING_INDEX(SUBSTRING_INDEX(labs, ',', i), ',', -1);
+        
+        -- Insert 50 computers for each lab
+        SET j = 1;
+        WHILE j <= 50 DO
+            INSERT INTO computer_status (LABORATORY, COMPUTER_NUMBER, STATUS)
+            VALUES (lab, j, 'Available');
+            SET j = j + 1;
+        END WHILE;
+        
+        SET i = i + 1;
+    END WHILE;
+END$$
+DELIMITER ;
+
+CALL InsertComputerStatuses();
+DROP PROCEDURE IF EXISTS InsertComputerStatuses;
+
+-- Add dummy data for Lab 524 (45 computers in use)
+UPDATE computer_status 
+SET STATUS = 'In Use', 
+    LAST_UPDATED = NOW() 
+WHERE LABORATORY = '524' 
+AND COMPUTER_NUMBER <= 45;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `feedback`
 --
 
+DROP TABLE IF EXISTS `feedback`;
 CREATE TABLE `feedback` (
-  `FEEDBACK_ID` int(11) NOT NULL,
+  `FEEDBACK_ID` int(11) NOT NULL AUTO_INCREMENT,
   `STUDENT_ID` int(11) NOT NULL,
   `LABORATORY` varchar(50) NOT NULL,
   `SESSION_DATE` date NOT NULL,
-  `FEEDBACK_MSG` varchar(255) NOT NULL
+  `FEEDBACK_MSG` varchar(255) NOT NULL,
+  PRIMARY KEY (`FEEDBACK_ID`),
+  KEY `FK_FEEDBACK_STUDENT_ID` (`STUDENT_ID`),
+  CONSTRAINT `FK_FEEDBACK_STUDENT_ID` FOREIGN KEY (`STUDENT_ID`) REFERENCES `user` (`IDNO`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -74,16 +175,21 @@ INSERT INTO `feedback` (`FEEDBACK_ID`, `STUDENT_ID`, `LABORATORY`, `SESSION_DATE
 -- Table structure for table `reservation`
 --
 
+DROP TABLE IF EXISTS `reservation`;
 CREATE TABLE `reservation` (
-  `RESERVATION_ID` int(11) NOT NULL,
+  `RESERVATION_ID` int(11) NOT NULL AUTO_INCREMENT,
   `STUDENT_ID` int(11) NOT NULL,
   `LABORATORY` varchar(50) NOT NULL,
   `PURPOSE` varchar(50) NOT NULL,
   `RESERVATION_DATE` date NOT NULL,
   `START_TIME` time NOT NULL,
   `END_TIME` time NOT NULL,
-  `STATUS` enum('Pending','Approved','Rejected','') NOT NULL,
-  `CREATED_AT` datetime NOT NULL
+  `STATUS` enum('Pending','Approved','Rejected') NOT NULL DEFAULT 'Pending',
+  `ADMIN_NOTES` text DEFAULT NULL,
+  `CREATED_AT` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`RESERVATION_ID`),
+  KEY `FK_RESERVATION_STUDENT_ID` (`STUDENT_ID`),
+  CONSTRAINT `FK_RESERVATION_STUDENT_ID` FOREIGN KEY (`STUDENT_ID`) REFERENCES `user` (`IDNO`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -91,7 +197,28 @@ CREATE TABLE `reservation` (
 --
 
 INSERT INTO `reservation` (`RESERVATION_ID`, `STUDENT_ID`, `LABORATORY`, `PURPOSE`, `RESERVATION_DATE`, `START_TIME`, `END_TIME`, `STATUS`, `CREATED_AT`) VALUES
-(1, 2000, '530', 'C# Programming', '2025-04-22', '00:14:00', '02:14:00', 'Approved', '0000-00-00 00:00:00');
+(1, 2000, '530', 'C# Programming', '2025-04-22', '00:14:00', '02:14:00', 'Approved', '2025-04-22 00:14:00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `resources`
+--
+
+DROP TABLE IF EXISTS `resources`;
+CREATE TABLE `resources` (
+  `RESOURCE_ID` int(11) NOT NULL AUTO_INCREMENT,
+  `TITLE` varchar(255) NOT NULL,
+  `DESCRIPTION` text DEFAULT NULL,
+  `FILE_NAME` varchar(255) NOT NULL,
+  `FILE_PATH` varchar(255) NOT NULL,
+  `FILE_TYPE` varchar(50) NOT NULL,
+  `UPLOADED_BY` int(11) NOT NULL,
+  `UPLOAD_DATE` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`RESOURCE_ID`),
+  KEY `FK_RESOURCES_ADMIN_ID` (`UPLOADED_BY`),
+  CONSTRAINT `FK_RESOURCES_ADMIN_ID` FOREIGN KEY (`UPLOADED_BY`) REFERENCES `user` (`IDNO`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -99,15 +226,19 @@ INSERT INTO `reservation` (`RESERVATION_ID`, `STUDENT_ID`, `LABORATORY`, `PURPOS
 -- Table structure for table `sit-in`
 --
 
+DROP TABLE IF EXISTS `sit-in`;
 CREATE TABLE `sit-in` (
-  `ID` int(11) NOT NULL,
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
   `STUDENT_ID` int(11) NOT NULL,
   `LABORATORY` varchar(50) NOT NULL,
   `PURPOSE` varchar(50) NOT NULL,
   `SESSION_DATE` date NOT NULL,
   `LOGIN_TIME` time DEFAULT NULL,
   `LOGOUT_TIME` time DEFAULT NULL,
-  `STATUS` varchar(50) NOT NULL
+  `STATUS` enum('Active','Inactive') NOT NULL DEFAULT 'Active',
+  PRIMARY KEY (`ID`),
+  KEY `FK_STUDENT_ID` (`STUDENT_ID`),
+  CONSTRAINT `FK_STUDENT_ID` FOREIGN KEY (`STUDENT_ID`) REFERENCES `user` (`IDNO`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -152,128 +283,7 @@ INSERT INTO `sit-in` (`ID`, `STUDENT_ID`, `LABORATORY`, `PURPOSE`, `SESSION_DATE
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `user`
---
 
-CREATE TABLE `user` (
-  `IDNO` int(11) NOT NULL,
-  `LASTNAME` varchar(48) NOT NULL,
-  `FIRSTNAME` varchar(48) NOT NULL,
-  `MIDDLENAME` varchar(50) DEFAULT NULL,
-  `COURSE` varchar(4) NOT NULL,
-  `YEAR` int(1) NOT NULL,
-  `EMAIL` varchar(255) NOT NULL,
-  `PASSWORD` varchar(255) NOT NULL,
-  `SESSION` int(2) NOT NULL,
-  `ROLE` varchar(7) NOT NULL,
-  `POINTS` int(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `user`
---
-
-INSERT INTO `user` (`IDNO`, `LASTNAME`, `FIRSTNAME`, `MIDDLENAME`, `COURSE`, `YEAR`, `EMAIL`, `PASSWORD`, `SESSION`, `ROLE`, `POINTS`) VALUES
-(1000, 'Pat', 'Paul', 'T', 'BSIT', 4, 'pat@email.com', 'admin', 30, 'admin', NULL),
-(2000, 'DESO', 'LATOR', NULL, 'BSIT', 2, 'lator@email.com', '2000', 5, 'Student', NULL),
-(3000, 'eul', 'scepter', 's', 'BSIT', 1, 'eul@email.com', '3000', 16, 'Student', NULL),
-(4000, 'staff', 'force', 'g', 'NAME', 2, 'force@email.com', '4000', 10, 'Student', NULL),
-(5000, 'cape', 'glimmer', 'a', 'BSIT', 1, 'glimmer@email.com', '5000', 25, 'Student', NULL);
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `announcement`
---
-ALTER TABLE `announcement`
-  ADD PRIMARY KEY (`ID`),
-  ADD KEY `FK_ADMIN_ID` (`ADMIN_ID`);
-
---
--- Indexes for table `feedback`
---
-ALTER TABLE `feedback`
-  ADD PRIMARY KEY (`FEEDBACK_ID`),
-  ADD KEY `FK_FEEDBACK_STUDENT_ID` (`STUDENT_ID`);
-
---
--- Indexes for table `reservation`
---
-ALTER TABLE `reservation`
-  ADD PRIMARY KEY (`RESERVATION_ID`),
-  ADD KEY `FK_RESERVATION_STUDENT_ID` (`STUDENT_ID`);
-
---
--- Indexes for table `sit-in`
---
-ALTER TABLE `sit-in`
-  ADD PRIMARY KEY (`ID`),
-  ADD KEY `FK_STUDENT_ID` (`STUDENT_ID`);
-
---
--- Indexes for table `user`
---
-ALTER TABLE `user`
-  ADD PRIMARY KEY (`IDNO`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `announcement`
---
-ALTER TABLE `announcement`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `feedback`
---
-ALTER TABLE `feedback`
-  MODIFY `FEEDBACK_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT for table `reservation`
---
-ALTER TABLE `reservation`
-  MODIFY `RESERVATION_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT for table `sit-in`
---
-ALTER TABLE `sit-in`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `announcement`
---
-ALTER TABLE `announcement`
-  ADD CONSTRAINT `FK_ADMIN_ID` FOREIGN KEY (`ADMIN_ID`) REFERENCES `user` (`IDNO`);
-
---
--- Constraints for table `feedback`
---
-ALTER TABLE `feedback`
-  ADD CONSTRAINT `FK_FEEDBACK_STUDENT_ID` FOREIGN KEY (`STUDENT_ID`) REFERENCES `user` (`IDNO`);
-
---
--- Constraints for table `reservation`
---
-ALTER TABLE `reservation`
-  ADD CONSTRAINT `FK_RESERVATION_STUDENT_ID` FOREIGN KEY (`STUDENT_ID`) REFERENCES `user` (`IDNO`);
-
---
--- Constraints for table `sit-in`
---
-ALTER TABLE `sit-in`
-  ADD CONSTRAINT `FK_STUDENT_ID` FOREIGN KEY (`STUDENT_ID`) REFERENCES `user` (`IDNO`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
