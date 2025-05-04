@@ -26,6 +26,9 @@
     }elseif(isset($_POST["computers"])){
         header("Location: manageComputers.php");
         exit();
+    }elseif(isset($_POST["resources"])){
+        header("Location: manageResources.php");
+        exit();
     }elseif(isset($_POST["logout"])){
         session_start();
         session_unset();

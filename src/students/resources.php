@@ -1,57 +1,128 @@
 <?php
 session_start();
-require_once '../config/database.php';
-require_once 'studentHeader.php';
+include(__DIR__ . '/../../database.php');
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../index.php");
+    header("Location: ../../login.php");
     exit();
 }
 
 // Fetch all resources
-$resources_query = "SELECT r.*, u.FIRSTNAME, u.LASTNAME 
-                   FROM resources r 
-                   JOIN user u ON r.UPLOADED_BY = u.IDNO 
-                   ORDER BY r.UPLOAD_DATE DESC";
-$resources_result = $conn->query($resources_query);
+$query = "SELECT r.*, u.FIRSTNAME, u.LASTNAME 
+          FROM resources r 
+          JOIN user u ON r.UPLOADED_BY = u.IDNO 
+          ORDER BY r.UPLOAD_DATE DESC";
+$resources = $conn->query($query);
 ?>
 
-<div class="container mt-4">
-    <h2>Learning Resources</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <title>Resources</title>
+    <style>
+        .resources-container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .resource-card {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .file-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        .resource-info {
+            margin-left: 10px;
+        }
+        .resource-meta {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .download-btn {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <?php include(__DIR__ . '/studentHeader.php'); ?>
     
-    <div class="row">
-        <?php while ($resource = $resources_result->fetch_assoc()): ?>
-            <div class="col-md-6 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title"><?php echo htmlspecialchars($resource['TITLE']); ?></h5>
-                        <p class="card-text"><?php echo htmlspecialchars($resource['DESCRIPTION']); ?></p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-muted">
-                                    Uploaded by: <?php echo htmlspecialchars($resource['FIRSTNAME'] . ' ' . $resource['LASTNAME']); ?><br>
-                                    Date: <?php echo date('M d, Y', strtotime($resource['UPLOAD_DATE'])); ?>
-                                </small>
-                            </div>
-                            <div>
-                                <span class="badge bg-secondary me-2"><?php echo strtoupper($resource['FILE_TYPE']); ?></span>
-                                <a href="<?php echo $resource['FILE_PATH']; ?>" class="btn btn-primary" target="_blank">
-                                    <i class="fas fa-download"></i> Download
-                                </a>
+    <div class="content-wrapper">
+        <div class="resources-container">
+            <h2 class="w3-center">Available Resources</h2>
+            
+            <?php if ($resources && $resources->num_rows > 0): ?>
+                <div class="w3-row-padding">
+                    <?php while ($resource = $resources->fetch_assoc()): ?>
+                        <div class="w3-col s12 m6 l4">
+                            <div class="resource-card w3-card">
+                                <div class="w3-container">
+                                    <div class="file-icon">
+                                        <?php
+                                        $icon = '📄';
+                                        switch ($resource['FILE_TYPE']) {
+                                            case 'pdf':
+                                                $icon = '📕';
+                                                break;
+                                            case 'doc':
+                                            case 'docx':
+                                                $icon = '📘';
+                                                break;
+                                            case 'ppt':
+                                            case 'pptx':
+                                                $icon = '📗';
+                                                break;
+                                            case 'txt':
+                                                $icon = '📄';
+                                                break;
+                                        }
+                                        echo $icon;
+                                        ?>
+                                    </div>
+                                    <div class="resource-info">
+                                        <h4><?php echo htmlspecialchars($resource['TITLE']); ?></h4>
+                                        <p><?php echo htmlspecialchars($resource['DESCRIPTION']); ?></p>
+                                        <div class="resource-meta">
+                                            <p>Uploaded by: <?php echo htmlspecialchars($resource['FIRSTNAME'] . ' ' . $resource['LASTNAME']); ?></p>
+                                            <p>Date: <?php echo date('M d, Y', strtotime($resource['UPLOAD_DATE'])); ?></p>
+                                        </div>
+                                        <a href="../../uploads/<?php echo $resource['FILE_PATH']; ?>" 
+                                           class="w3-button w3-blue download-btn" 
+                                           target="_blank">Download</a>
+                                        <a href="<?php 
+                                            $file_url = '../../uploads/' . $resource['FILE_PATH'];
+                                            $file_type = strtolower($resource['FILE_TYPE']);
+                                            if ($file_type === 'pdf' || $file_type === 'txt') {
+                                                echo $file_url;
+                                            } else if (in_array($file_type, ['doc', 'docx', 'ppt', 'pptx'])) {
+                                                echo 'https://docs.google.com/gview?url=' . urlencode((isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']) . '/' . $file_url) . '&embedded=true';
+                                            } else {
+                                                echo $file_url;
+                                            }
+                                        ?>" 
+                                           class="w3-button w3-green download-btn" 
+                                           target="_blank">View</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    <?php endwhile; ?>
                 </div>
-            </div>
-        <?php endwhile; ?>
-    </div>
-    
-    <?php if ($resources_result->num_rows === 0): ?>
-        <div class="alert alert-info">
-            No resources available at the moment.
+            <?php else: ?>
+                <div class="w3-panel w3-pale-yellow w3-border">
+                    <p class="w3-center">No resources available at the moment.</p>
+                </div>
+            <?php endif; ?>
         </div>
-    <?php endif; ?>
-</div>
-
-<?php require_once '../includes/footer.php'; ?> 
+    </div>
+</body>
+</html> 
