@@ -66,6 +66,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
                 $reservation = $stmt->get_result()->fetch_assoc();
                 $stmt->close();
 
+                // Update computer status to 'In Use'
+                $update_computer_query = "UPDATE computer_status 
+                                        SET STATUS = 'In Use', 
+                                            LAST_UPDATED = NOW() 
+                                        WHERE LABORATORY = ? AND COMPUTER_NUMBER = ?";
+                $stmt = $conn->prepare($update_computer_query);
+                $stmt->bind_param("si", $reservation['LABORATORY'], $reservation['PC_NUMBER']);
+                $stmt->execute();
+                $stmt->close();
+
                 // Create sit-in record
                 $sit_in_query = "INSERT INTO `sit-in` (STUDENT_ID, LABORATORY, PURPOSE, SESSION_DATE, STATUS) 
                                 VALUES (?, ?, ?, ?, 'Active')";

@@ -176,7 +176,7 @@ if ($conn) {
                             </div>
                             <div class="w3-half">
                                 <label>Laboratory</label>
-                                <select name="laboratory" id="laboratory" class="w3-select w3-border" required onchange="loadAvailablePCs()">
+                                <select name="laboratory" id="laboratory" class="w3-select w3-border" required onchange="loadAvailablePCs(); loadLabSchedule()">
                                     <option value="">Select Lab</option>
                                     <option value="517">517</option>
                                     <option value="524">524</option>
@@ -187,6 +187,11 @@ if ($conn) {
                                     <option value="544">544</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <div id="labSchedule" class="w3-panel w3-pale-blue" style="display: none; margin-top: 15px;">
+                            <h4>Laboratory Schedule</h4>
+                            <div id="scheduleContent"></div>
                         </div>
 
                         <div class="w3-row-padding" style="margin-top: 15px;">
@@ -280,6 +285,44 @@ if ($conn) {
             })
             .catch(error => {
                 console.error('Error loading PCs:', error);
+            });
+    }
+
+    function loadLabSchedule() {
+        const lab = document.getElementById('laboratory').value;
+        const scheduleDiv = document.getElementById('labSchedule');
+        const scheduleContent = document.getElementById('scheduleContent');
+        
+        if (!lab) {
+            scheduleDiv.style.display = 'none';
+            return;
+        }
+        
+        // Fetch laboratory schedule
+        fetch(`../admin/get_lab_schedule.php?lab=${lab}`)
+            .then(response => response.json())
+            .then(schedules => {
+                if (schedules.length === 0) {
+                    scheduleContent.innerHTML = '<p>No scheduled classes for this laboratory.</p>';
+                } else {
+                    let html = '<table class="w3-table w3-striped w3-bordered">';
+                    html += '<tr class="w3-blue"><th>Day</th><th>Time</th></tr>';
+                    
+                    schedules.forEach(schedule => {
+                        html += '<tr>';
+                        html += `<td>${schedule.DAY_OF_WEEK}</td>`;
+                        html += `<td>${schedule.START_TIME} - ${schedule.END_TIME}</td>`;
+                        html += '</tr>';
+                    });
+                    
+                    html += '</table>';
+                    scheduleContent.innerHTML = html;
+                }
+                scheduleDiv.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error loading schedule:', error);
+                scheduleDiv.style.display = 'none';
             });
     }
     </script>

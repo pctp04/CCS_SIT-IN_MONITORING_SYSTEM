@@ -70,12 +70,12 @@
             $stats['total_sitin'] = mysqli_fetch_assoc($result)['total'];
         }
 
-        // Get top 3 students by points
+        // Get top 5 students by points
         $query = "SELECT IDNO, FIRSTNAME, LASTNAME, COURSE, YEAR, POINTS 
                  FROM user 
                  WHERE ROLE = 'student' 
                  ORDER BY POINTS DESC 
-                 LIMIT 3";
+                 LIMIT 5";
         $result = $conn->query($query);
         if($result) {
             while($row = $result->fetch_assoc()) {
@@ -238,7 +238,7 @@
 
                 <!-- Leaderboard -->
                 <div class="leaderboard w3-card w3-padding">
-                    <h3 class="w3-center">Top 3 Students</h3>
+                    <h3 class="w3-center">Top 5 Students</h3>
                     <?php if (!empty($top_students)): ?>
                         <?php foreach ($top_students as $index => $student): ?>
                             <div class="leaderboard-item">

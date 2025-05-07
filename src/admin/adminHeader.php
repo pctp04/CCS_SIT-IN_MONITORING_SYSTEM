@@ -26,6 +26,9 @@
     }elseif(isset($_POST["computers"])){
         header("Location: manageComputers.php");
         exit();
+    }elseif(isset($_POST["schedules"])){
+        header("Location: manageSchedules.php");
+        exit();
     }elseif(isset($_POST["resources"])){
         header("Location: manageResources.php");
         exit();
@@ -153,6 +156,7 @@
                 <button type="submit" name="feedbackReports" class="nav-button">Feedback Reports</button>
                 <button type="submit" name="reservation" class="nav-button">Reservation</button>
                 <button type="submit" name="computers" class="nav-button">Computer Management</button>
+                <button type="submit" name="schedules" class="nav-button">Lab Schedules</button>
                 <button type="submit" name="resources" class="nav-button">Resources</button>
                 <button type="submit" name="logout" class="logout-button">Logout</button>
             </form>
