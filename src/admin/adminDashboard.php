@@ -280,21 +280,21 @@
                                 <div class="w3-card w3-padding w3-margin-bottom">
                                     <div class="w3-row">
                                         <div class="w3-col s12">
-                                            <p class="w3-text-grey" style="margin-bottom: 8px;">
+                                            <p class="w3-text-grey text-margin-bottom">
                                                 CCS Admin | <?php echo $row['FORMATTED_DATE']; ?>
                                                 <span class="w3-right">
                                                     <button onclick="openEditModal(<?php echo $row['ID']; ?>, '<?php echo addslashes($row['CONTENT']); ?>')" 
-                                                            class="w3-button w3-text-blue" style="padding: 0px 8px;">
+                                                            class="w3-button w3-text-blue button-padding">
                                                         Edit
                                                     </button>
                                                     <a href="?delete_announcement=<?php echo $row['ID']; ?>" 
                                                        onclick="return confirm('Are you sure you want to delete this announcement?')"
-                                                       class="w3-button w3-text-red" style="padding: 0px 8px;">
+                                                       class="w3-button w3-text-red button-padding">
                                                         Delete
                                                     </a>
                                                 </span>
                                             </p>
-                                            <p style="margin-top: 0;"><?php echo htmlspecialchars($row['CONTENT']); ?></p>
+                                            <p class="content-margin-top"><?php echo htmlspecialchars($row['CONTENT']); ?></p>
                                         </div>
                                     </div>
                                 </div>
@@ -310,7 +310,7 @@
 
     <!-- Edit Announcement Modal -->
     <div id="editModal" class="w3-modal">
-        <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:600px">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom modal-content-large">
             <header class="w3-container w3-blue">
                 <span onclick="document.getElementById('editModal').style.display='none'" 
                       class="w3-button w3-display-topright">&times;</span>

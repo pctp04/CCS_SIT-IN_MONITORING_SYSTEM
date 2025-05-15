@@ -209,7 +209,7 @@ if ($conn) {
                                                     <?php echo htmlspecialchars($reservation['STATUS']); ?>
                                                 </td>
                                                 <td>
-                                                    <form method="POST" style="display: inline;">
+                                                    <form method="POST" class="inline-form">
                                                         <input type="hidden" name="reservation_id" value="<?php echo $reservation['RESERVATION_ID']; ?>">
                                                         <select name="status" class="w3-select w3-border" required>
                                                             <option value="Pending" <?php echo $reservation['STATUS'] === 'Pending' ? 'selected' : ''; ?>>Pending</option>

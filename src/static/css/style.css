@@ -159,14 +159,17 @@ body {
   width: 100%;
   margin-bottom: 10px;
 }
+
 .form-container input[type="submit"] {
   width: auto;
   margin: 0 auto;
   display: block;
 }
+
 .form-container select {
   width: 100%;
 }
+
 .submit {
   width: 100%;
 }
@@ -181,119 +184,68 @@ body {
   padding: 0;
 }
 
-.header-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.rules-container {
-  display: flex;
-  align-items: flex-start;
-  padding: 20px;
-  flex: 0 1 auto;
-}
-
-.announcement-container {
-  padding: 20px;
-  flex: 0 1 auto;
-}
-
-.header-logo {
-  width: 50px;
-  height: 50px;
-  opacity: 0.9;
-}
-
-.lab-rules-box {
-  border: 1px solid #ccc;
-  padding: 10px;
-  height: 300px;
-  overflow-y: auto;
-  background-color: #f9f9f9;
-}
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 15% 40% 40% 40% 20% 20%; /* Adjust column widths as needed */
-  gap: 30px; /* Adjust gap between columns */
-}
-
-.modal {
+/* Lab schedule styles */
+.lab-schedule {
   display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  margin-top: 15px;
 }
 
-.modal-content {
-  background-color: #fefefe;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 500px;
-  border-radius: 5px;
+/* Row padding styles */
+.row-padding-top {
+  margin-top: 15px;
 }
 
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
+.row-padding-top-large {
+  margin-top: 20px;
 }
 
-.search-form {
-  margin: 20px 0;
+/* Background styles */
+.white-bg {
+  background-color: white;
 }
 
-.search-form input {
-  padding: 8px;
-  width: 70%;
-  margin-right: 10px;
-}
-
-.search-form button {
-  padding: 8px 15px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-#studentInfo {
-  margin: 20px 0;
-  padding: 10px;
-  background-color: #f9f9f9;
-}
-
-#studentInfo form {
-  display: flex;
-  flex-direction: column;
-}
-
-#studentInfo label,
-#studentInfo input {
-  margin-bottom: 10px;
-}
-
-#studentInfo input {
-  padding: 8px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-#studentInfo button {
-  padding: 10px;
-  margin-top: 10px;
+/* Select styles */
+.entries-select {
   width: 100px;
-  align-self: flex-end;
+}
+
+.lab-select {
+  width: 200px;
+}
+
+/* Date filter styles */
+.date-filter {
+  width: auto;
+  display: inline-block;
+}
+
+/* Form styles */
+.inline-form {
+  display: inline;
+}
+
+.hidden-form {
+  display: none;
+}
+
+/* Modal content styles */
+.modal-content {
+  max-width: 400px;
+}
+
+.modal-content-large {
+  max-width: 600px;
+}
+
+/* Text styles */
+.text-margin-bottom {
+  margin-bottom: 8px;
+}
+
+.button-padding {
+  padding: 0px 8px;
+}
+
+.content-margin-top {
+  margin-top: 0;
 }

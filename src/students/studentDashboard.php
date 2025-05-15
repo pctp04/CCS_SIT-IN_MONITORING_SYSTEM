@@ -82,46 +82,6 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="../static/css/style.css">
     <title>Dashboard</title>
-    <style>
-        .announcement-box {
-            padding: 15px;
-            margin-bottom: 15px;
-            border-left: 4px solid #2196F3;
-            background-color: #f9f9f9;
-        }
-        .announcement-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        .announcement-content {
-            margin-bottom: 10px;
-            color: #666;
-        }
-        .announcement-meta {
-            font-size: 12px;
-            color: #888;
-        }
-        .announcement-container {
-            max-height: 500px;
-            overflow-y: auto;
-            padding: 20px;
-        }
-        .announcement-header {
-            background-color: #2196F3;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .no-announcements {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-            font-style: italic;
-        }
-    </style>
 </head>
 <body>
     <!-- header -->
@@ -134,7 +94,7 @@
                 <h3>User Information</h3>
             </header>
             <div class="w3-container">
-                <img src="../static/images/defaultPfp.png" alt="User" class="w3-round w3-circle w3-center" style="width: 100px; height: 100px;"> <br> <hr>
+                <img src="../static/images/defaultPfp.png" alt="User" class="w3-round w3-circle w3-center"> <br> <hr>
                 <p><b>ID NO</b>: <?php echo htmlspecialchars($user['IDNO']); ?></p>
                 <p><b>Name</b>: <?php echo htmlspecialchars($user['FIRSTNAME'] . ' ' . $user['MIDDLENAME'] . ' ' . $user['LASTNAME']); ?></p>
                 <p><b>Course</b>: <?php echo htmlspecialchars($user['COURSE']); ?></p>

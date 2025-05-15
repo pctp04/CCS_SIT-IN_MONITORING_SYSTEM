@@ -166,7 +166,7 @@ if ($conn) {
                             </div>
                             <div class="w3-half">
                                 <label>Days of Week</label>
-                                <div class="w3-padding w3-border" style="background-color: white;">
+                                <div class="w3-padding w3-border white-bg">
                                     <div class="w3-row">
                                         <div class="w3-col s6">
                                             <label class="w3-checkbox">
@@ -210,7 +210,7 @@ if ($conn) {
                             </div>
                         </div>
 
-                        <div class="w3-row-padding" style="margin-top: 15px;">
+                        <div class="w3-row-padding row-padding-top">
                             <div class="w3-half">
                                 <label>Start Time</label>
                                 <input type="time" name="start_time" class="w3-input w3-border" required>
@@ -221,7 +221,7 @@ if ($conn) {
                             </div>
                         </div>
 
-                        <div class="w3-row-padding" style="margin-top: 20px;">
+                        <div class="w3-row-padding row-padding-top-large">
                             <div class="w3-col">
                                 <button type="submit" name="submit_schedule" class="w3-button w3-blue w3-block">
                                     Add Schedule

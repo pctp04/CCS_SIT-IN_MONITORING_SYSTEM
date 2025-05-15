@@ -126,7 +126,7 @@ if($conn) {
                     </div>
                     <div class="w3-col s6">
                         <form method="get" class="w3-right">
-                            <input type="date" name="date" value="<?php echo $date_filter; ?>" class="w3-input w3-border" style="width: auto; display: inline-block;">
+                            <input type="date" name="date" value="<?php echo $date_filter; ?>" class="w3-input w3-border date-filter">
                             <button type="submit" class="w3-button w3-blue">Search</button>
                             <button type="button" class="w3-button w3-red" onclick="resetDate()">Reset</button>
                         </form>

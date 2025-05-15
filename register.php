@@ -15,7 +15,7 @@
     <div class="w3-center">
         <h2>Registration Form</h2>
         <div class="form-container">
-            <form action="register.php" method="post" style="display:inline;">
+            <form action="register.php" method="post" class="inline-form">
                 <button type="submit" name="cancel" value="cancel" class="w3-button w3-red w3-round w3-left">Cancel</button> <br><br>
             </form>
             <form action="register.php" method="post">

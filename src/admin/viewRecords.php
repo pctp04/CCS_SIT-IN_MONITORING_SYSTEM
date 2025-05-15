@@ -138,7 +138,7 @@ if ($conn) {
                         <div class="w3-col m6">
                             <div class="entries-control">
                                 <label>Show entries:</label>
-                                <select id="entriesSelect" class="w3-select w3-border" style="width: 100px">
+                                <select id="entriesSelect" class="w3-select w3-border entries-select">
                                     <option value="5">5</option>
                                     <option value="10">10</option>
                                     <option value="25">25</option>

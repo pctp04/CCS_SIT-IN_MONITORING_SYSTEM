@@ -168,7 +168,7 @@ if ($conn) {
             <!-- Lab Selector -->
             <div class="lab-selector">
                 <form method="get" class="w3-container">
-                    <select name="lab" class="w3-select w3-border" style="width: 200px;" onchange="this.form.submit()">
+                    <select name="lab" class="w3-select w3-border lab-select" onchange="this.form.submit()">
                         <option value="517" <?php echo $selected_lab === '517' ? 'selected' : ''; ?>>Laboratory 517</option>
                         <option value="524" <?php echo $selected_lab === '524' ? 'selected' : ''; ?>>Laboratory 524</option>
                         <option value="526" <?php echo $selected_lab === '526' ? 'selected' : ''; ?>>Laboratory 526</option>
@@ -214,7 +214,7 @@ if ($conn) {
 
     <!-- Status Update Modal -->
     <div id="statusModal" class="w3-modal">
-        <div class="w3-modal-content w3-card-4 w3-animate-zoom" style="max-width:400px">
+        <div class="w3-modal-content w3-card-4 w3-animate-zoom modal-content">
             <header class="w3-container w3-blue">
                 <span onclick="document.getElementById('statusModal').style.display='none'" 
                       class="w3-button w3-display-topright">&times;</span>

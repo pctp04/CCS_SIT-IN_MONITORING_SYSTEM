@@ -189,12 +189,12 @@ if ($conn) {
                             </div>
                         </div>
 
-                        <div id="labSchedule" class="w3-panel w3-pale-blue" style="display: none; margin-top: 15px;">
+                        <div id="labSchedule" class="w3-panel w3-pale-blue lab-schedule">
                             <h4>Laboratory Schedule</h4>
                             <div id="scheduleContent"></div>
                         </div>
 
-                        <div class="w3-row-padding" style="margin-top: 15px;">
+                        <div class="w3-row-padding row-padding-top">
                             <div class="w3-half">
                                 <label>Available PCs</label>
                                 <select name="pc_number" id="pc_number" class="w3-select w3-border" required>
@@ -208,14 +208,14 @@ if ($conn) {
                             </div>
                         </div>
 
-                        <div class="w3-row-padding" style="margin-top: 15px;">
+                        <div class="w3-row-padding row-padding-top">
                             <div class="w3-half">
                                 <label>Time In</label>
                                 <input type="time" name="time_in" class="w3-input w3-border" required>
                             </div>
                         </div>
 
-                        <div class="w3-row-padding" style="margin-top: 20px;">
+                        <div class="w3-row-padding row-padding-top-large">
                             <div class="w3-col">
                                 <button type="submit" name="submit_reservation" class="w3-button w3-blue w3-block">
                                     Reserve

@@ -28,7 +28,7 @@
                 Don't have an account yet?
                 <a href="#" class="link-button" onclick="document.getElementById('register-form').submit();">Register</a>
             </form>
-            <form id="register-form" action="register.php" method="post" style="display:none;">
+            <form id="register-form" action="register.php" method="post" class="hidden-form">
                 <input type="hidden" name="register1" value="register">
             </form>
         </div>
